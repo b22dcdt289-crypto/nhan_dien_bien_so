@@ -1,0 +1,10 @@
+.venv/
+data/
+yolov5/
+source/
+__pycache__/
+*.pyc
+*.part
+*.zip
+artifacts/*
+!artifacts/lenet5_vnlp_corrected_pruned25.pt
