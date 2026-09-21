@@ -25,6 +25,14 @@
         "--output", "${workspaceFolder}/artifacts/lenet5_ocr_structured_pruned25_final.pt"
       ],
       "justMyCode": false
+    },
+    {
+      "name": "Xem bao cao MAC va tham so",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/report_model.py",
+      "console": "integratedTerminal",
+      "justMyCode": false
     }
   ]
 }
