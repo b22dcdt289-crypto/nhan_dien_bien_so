@@ -1,0 +1,1 @@
+{"dense_macs":418704,"structured_macs":233338,"mac_reduction":0.4423,"channels":[4,12,90,63],"val_acc":0.9522,"source":"data/OCR/OCR"}

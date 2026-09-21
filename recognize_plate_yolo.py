@@ -8,12 +8,13 @@ import torch
 
 from recognize_plate import segment_characters
 from train_lenet5 import CLASS_NAMES, LeNet5
+from structured_prune_lenet5 import LeNet5Structured
 
 
 def main():
     parser = argparse.ArgumentParser(description="Plate detector + LeNet-5 character OCR")
     parser.add_argument("image", type=Path)
-    parser.add_argument("--model", type=Path, default=Path("artifacts/lenet5_ocr_pruned25_final.pt"))
+    parser.add_argument("--model", type=Path, default=Path("artifacts/lenet5_ocr_structured_pruned25_final.pt"))
     parser.add_argument("--detector", type=Path, default=Path("source/model/LP_detector.pt"))
     args = parser.parse_args()
     image = cv2.imread(str(args.image))
@@ -26,8 +27,9 @@ def main():
     if boxes.empty:
         raise RuntimeError("Detector không tìm thấy biển số trong ảnh.")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = LeNet5(len(CLASS_NAMES)).to(device)
     checkpoint = torch.load(args.model, map_location=device, weights_only=False)
+    model_cls = LeNet5Structured if checkpoint.get("arch") == "LeNet5Structured" else LeNet5
+    model = model_cls(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     model.eval()
     for i, row in boxes.iterrows():

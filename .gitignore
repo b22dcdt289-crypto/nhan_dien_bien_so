@@ -11,3 +11,6 @@ artifacts/*
 !artifacts/lenet5_ocr_97target_final.pt
 !artifacts/lenet5_ocr_pruned25_final.pt
 !artifacts/lenet5_lite_ocr_int8_ready.pt
+!artifacts/lenet5_ocr_structured_pruned25.pt
+!artifacts/lenet5_ocr_structured_pruned25_final.pt
+!artifacts/structured_pruning_metrics.json

@@ -17,6 +17,19 @@ validation crops from the labelled OCR set. The best dense model reached
 96.82% validation accuracy. After global unstructured pruning at 25% and
 fine-tuning, `artifacts/lenet5_ocr_pruned25_final.pt` reached 96.89%.
 
+## Structured pruning for DE10-Lite
+
+`structured_prune_lenet5.py` removes complete convolution filters and fully
+connected neurons. The deployed model uses channels `(4, 12, 90, 63)` instead
+of `(6, 16, 120, 84)`, reducing theoretical MACs from 418,704 to 233,338
+per character (about 44.3% fewer). After fine-tuning, validation accuracy was
+95.22%. The MAC reduction is physical in the network dimensions and is
+suitable for mapping to fewer FPGA multipliers.
+
+```powershell
+.venv\Scripts\python.exe structured_prune_lenet5.py --data data/OCR/OCR --init artifacts/lenet5_ocr_97target_final.pt --epochs 10 --output artifacts/lenet5_ocr_structured_pruned25.pt
+```
+
 The full LeNet-5 has 418,704 theoretical MACs per 32x32 character. With 25%
 unstructured sparsity, the theoretical layer shape is unchanged; a sparse
 accelerator can skip approximately 104,676 zero-weight MACs, leaving about
