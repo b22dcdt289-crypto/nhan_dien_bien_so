@@ -22,7 +22,10 @@ fine-tuning, `artifacts/lenet5_ocr_pruned25_final.pt` reached 96.89%.
 `structured_prune_lenet5.py` removes complete convolution filters and fully
 connected neurons. The deployed model uses channels `(4, 12, 90, 63)` instead
 of `(6, 16, 120, 84)`, reducing theoretical MACs from 418,704 to 233,338
-per character (about 44.3% fewer). After fine-tuning, validation accuracy was
+per character (about 44.3% fewer). A Vietnamese plate is treated as 8
+characters whether it is printed on one row or two rows, so the OCR cost is
+about 1.87 million MAC per plate; two rows only change layout/order handling.
+After fine-tuning, validation accuracy was
 95.22%. The MAC reduction is physical in the network dimensions and is
 suitable for mapping to fewer FPGA multipliers.
 

@@ -21,8 +21,8 @@ def main():
     print(f'So tham so          : {params:,}')
     print(f'Trong so INT8       : {int8_mib:.3f} MiB')
     print(f'MAC mot ky tu       : {mac_char:,}')
-    print(f'MAC bien 1 hang (8) : {mac_char * 8:,}  (~{mac_char * 8 / 1e6:.2f} trieu)')
-    print(f'MAC bien 2 hang (16): {mac_char * 16:,} (~{mac_char * 16 / 1e6:.2f} trieu)')
+    print(f'MAC bien 1 hang (8 ky tu): {mac_char * 8:,} (~{mac_char * 8 / 1e6:.2f} trieu)')
+    print(f'MAC bien 2 hang (8 ky tu): {mac_char * 8:,} (~{mac_char * 8 / 1e6:.2f} trieu)')
     print(f'Accuracy validation : {checkpoint.get("val_acc", 0.0) * 100:.2f}%')
     print('===============================================\n')
 
