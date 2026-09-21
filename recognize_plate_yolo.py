@@ -13,7 +13,7 @@ from train_lenet5 import CLASS_NAMES, LeNet5
 def main():
     parser = argparse.ArgumentParser(description="Plate detector + LeNet-5 character OCR")
     parser.add_argument("image", type=Path)
-    parser.add_argument("--model", type=Path, default=Path("artifacts/lenet5_vnlp_corrected_pruned25.pt"))
+    parser.add_argument("--model", type=Path, default=Path("artifacts/lenet5_ocr_pruned25_final.pt"))
     parser.add_argument("--detector", type=Path, default=Path("source/model/LP_detector.pt"))
     args = parser.parse_args()
     image = cv2.imread(str(args.image))
