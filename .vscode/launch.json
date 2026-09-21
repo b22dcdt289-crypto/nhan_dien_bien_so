@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Nhận diện biển số - structured LeNet",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/recognize_plate_yolo.py",
+      "console": "integratedTerminal",
+      "args": [
+        "${workspaceFolder}/data/VNLP/detection/one_row/1_1010_1_36A38587_102_344_227_413.jpg"
+      ],
+      "justMyCode": false
+    },
+    {
+      "name": "Train structured pruning",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/structured_prune_lenet5.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--data", "${workspaceFolder}/data/OCR/OCR",
+        "--init", "${workspaceFolder}/artifacts/lenet5_ocr_97target_final.pt",
+        "--epochs", "10",
+        "--output", "${workspaceFolder}/artifacts/lenet5_ocr_structured_pruned25_final.pt"
+      ],
+      "justMyCode": false
+    }
+  ]
+}
