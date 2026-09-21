@@ -60,6 +60,18 @@
         "--output", "${workspaceFolder}/artifacts/lenet5_train1_structured_pruned25.pt"
       ],
       "justMyCode": false
+    },
+    {
+      "name": "Xem bao cao pruning 50%",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/report_model.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--checkpoint",
+        "${workspaceFolder}/artifacts/lenet5_ocr_pruned50_final.pt"
+      ],
+      "justMyCode": false
     }
   ]
 }
