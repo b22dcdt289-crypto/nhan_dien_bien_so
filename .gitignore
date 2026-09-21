@@ -15,3 +15,5 @@ artifacts/*
 !artifacts/lenet5_ocr_structured_pruned25_final.pt
 !artifacts/structured_pruning_metrics.json
 !artifacts/model_report.md
+!artifacts/lenet5_train1_structured_pruned25.pt
+!artifacts/train1_metrics.json

@@ -1,0 +1,1 @@
+{"source":"data/OCR/OCR/images/train(1)/detection","source_images":37297,"one_row_images":19086,"two_row_car_images":12618,"two_row_motorcycle_images":5593,"accepted_images":13779,"character_crops":109869,"val_acc":0.8943,"macs_per_character":233338,"macs_per_plate_8_chars":1866704}

@@ -60,6 +60,23 @@ contains 37,297 source images; automated character segmentation accepts a
 subset because images with ambiguous segmentation are rejected rather than
 assigned noisy labels.
 
+## Train with `images/train(1)`
+
+The `train(1)` source contains 37,297 full plate images: 19,086 one-row,
+12,618 two-row car plates, and 5,593 two-row motorcycle plates. The filename
+contains the plate text and plate box, so `prepare_vnlp_chars.py` can generate
+character folders:
+
+```powershell
+.venv\Scripts\python.exe prepare_vnlp_chars.py --root "data/OCR/OCR/images/train(1)/detection" --out data/VNLP_chars_train1
+.venv\Scripts\python.exe finetune_structured_folder.py --data data/VNLP_chars_train1 --init artifacts/lenet5_ocr_structured_pruned25_final.pt --epochs 10 --lr 1e-4 --output artifacts/lenet5_train1_structured_pruned25.pt
+```
+
+This run accepted 13,779 images and generated 109,869 character crops. The
+structured model reached 89.43% character validation accuracy. This is lower
+than the 95.22% OCR-labelled baseline because automatic contour segmentation
+rejects or misaligns many full-plate images; it is not a plate-level accuracy.
+
 ## Reproduce pruning
 
 ```powershell

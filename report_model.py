@@ -1,22 +1,23 @@
 from pathlib import Path
+import argparse
 
 import torch
 
 from structured_prune_lenet5 import LeNet5Structured
 
 
-CHECKPOINT = Path('artifacts/lenet5_ocr_structured_pruned25_final.pt')
-
-
 def main():
-    checkpoint = torch.load(CHECKPOINT, map_location='cpu', weights_only=False)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkpoint', type=Path, default=Path('artifacts/lenet5_ocr_structured_pruned25_final.pt'))
+    args = parser.parse_args()
+    checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     model = LeNet5Structured(36)
     model.load_state_dict(checkpoint['model'])
     params = sum(parameter.numel() for parameter in model.parameters())
     int8_mib = params / (1024 * 1024)
     mac_char = model.macs()
     print('\n===== BAO CAO MO HINH STRUCTURED LENET-5 =====')
-    print(f'Checkpoint          : {CHECKPOINT}')
+    print(f'Checkpoint          : {args.checkpoint}')
     print(f'Channels            : {checkpoint.get("channels", model.channels)}')
     print(f'So tham so          : {params:,}')
     print(f'Trong so INT8       : {int8_mib:.3f} MiB')

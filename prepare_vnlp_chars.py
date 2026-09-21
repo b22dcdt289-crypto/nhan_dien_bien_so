@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 import re
+import argparse
 from pathlib import Path
 
 import cv2
@@ -59,14 +60,18 @@ def find_character_boxes(plate):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Create character folders from VNLP filename labels")
+    parser.add_argument("--root", type=Path, default=ROOT, help="VNLP detection directory")
+    parser.add_argument("--out", type=Path, default=OUT, help="output character-folder dataset")
+    args = parser.parse_args()
     random.seed(42)
     for split in ("train", "val"):
         for char in CHARS:
-            (OUT / split / char).mkdir(parents=True, exist_ok=True)
+            (args.out / split / char).mkdir(parents=True, exist_ok=True)
     paths = sorted(
-        list((ROOT / "one_row").glob("*.jpg"))
-        + list((ROOT / "two_rows").glob("*.jpg"))
-        + list((ROOT / "two_rows_label_xe_may").glob("*.jpg"))
+        list((args.root / "one_row").glob("*.jpg"))
+        + list((args.root / "two_rows").glob("*.jpg"))
+        + list((args.root / "two_rows_label_xe_may").glob("*.jpg"))
     )
     random.shuffle(paths)
     accepted = skipped = saved = 0
@@ -90,7 +95,7 @@ def main():
         for char, (bx, by, bw, bh) in zip(text, boxes):
             crop = gray[max(0, by - 2) : min(gray.shape[0], by + bh + 2), max(0, bx - 2) : min(gray.shape[1], bx + bw + 2)]
             crop = cv2.resize(crop, (32, 32), interpolation=cv2.INTER_AREA)
-            out = OUT / split / char / f"{accepted:06d}_{saved:03d}.png"
+            out = args.out / split / char / f"{accepted:06d}_{saved:03d}.png"
             cv2.imwrite(str(out), crop)
             saved += 1
         accepted += 1

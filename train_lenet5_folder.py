@@ -36,6 +36,28 @@ class FolderChars(Dataset):
         return torch.from_numpy(data).unsqueeze(0), label
 
 
+class LazyFolderChars(Dataset):
+    """Folder dataset that avoids caching a very large crop set in RAM."""
+
+    def __init__(self, root: Path, augment: bool = False):
+        self.items = []
+        self.augment = augment
+        for label, char in enumerate(CLASS_NAMES):
+            self.items.extend((p, label) for p in (root / char).glob("*.png"))
+
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, index):
+        path, label = self.items[index]
+        with Image.open(path) as image:
+            image = image.convert("L").resize((32, 32), Image.Resampling.BILINEAR)
+            if self.augment and random.random() < 0.5:
+                image = image.rotate(random.uniform(-4, 4), resample=Image.Resampling.BILINEAR, fillcolor=0)
+            data = (np.asarray(image, dtype=np.float32) / 255.0 - 0.5) / 0.5
+        return torch.from_numpy(data).unsqueeze(0), label
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, default=Path("data/VNLP_chars"))

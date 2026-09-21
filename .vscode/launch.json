@@ -33,6 +33,18 @@
       "program": "${workspaceFolder}/report_model.py",
       "console": "integratedTerminal",
       "justMyCode": false
+    },
+    {
+      "name": "Xem bao cao model train(1)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/report_model.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--checkpoint",
+        "${workspaceFolder}/artifacts/lenet5_train1_structured_pruned25.pt"
+      ],
+      "justMyCode": false
     }
   ]
 }
