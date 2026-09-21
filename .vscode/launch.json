@@ -45,6 +45,21 @@
         "${workspaceFolder}/artifacts/lenet5_train1_structured_pruned25.pt"
       ],
       "justMyCode": false
+    },
+    {
+      "name": "Train model tu train(1)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/finetune_structured_folder.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--data", "${workspaceFolder}/data/VNLP_chars_train1",
+        "--init", "${workspaceFolder}/artifacts/lenet5_ocr_structured_pruned25_final.pt",
+        "--epochs", "10",
+        "--lr", "0.0001",
+        "--output", "${workspaceFolder}/artifacts/lenet5_train1_structured_pruned25.pt"
+      ],
+      "justMyCode": false
     }
   ]
 }
