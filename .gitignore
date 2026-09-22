@@ -24,3 +24,4 @@ artifacts/*
 !artifacts/independent_lenet5_structured50_train1.pt
 !artifacts/independent_pipeline_metrics.json
 !artifacts/independent_model_report.md
+!artifacts/online_test_metrics.json

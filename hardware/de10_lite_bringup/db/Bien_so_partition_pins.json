@@ -1,0 +1,17 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "LEDR0",
+					"strict" : false
+				},
+				{
+					"name" : "MAX10_CLK1_50",
+					"strict" : false
+				}
+			]
+		}
+	]
+}

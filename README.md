@@ -122,6 +122,26 @@ known label. At inference, no text label is available: the prototype accepts
 only 8, 9 or 10 detected characters and skips an ambiguous frame instead of
 returning a fabricated plate string.
 
+## Online labeled-image smoke test
+
+`eval_online_labeled.py` evaluates public plate crops whose ground-truth text
+is encoded before the first underscore in the filename, for example
+`30A12345_0001_0.jpg`. It reports exact plate accuracy on attempted images,
+end-to-end accuracy including skipped images, character position accuracy and
+skip reasons:
+
+```powershell
+.venv\Scripts\python.exe eval_online_labeled.py path\to\online_test
+```
+
+The current reproducible smoke test used 69 public GitHub images and produced
+`55/69 = 79.71%` end-to-end exact plate accuracy, `55/65 = 84.62%` exact
+accuracy among attempted images, `93.45%` character-position accuracy and a
+`5.80%` skip rate. This is an external one-row plate-crop smoke test, not a
+DE10-Lite hardware accuracy result and not a replacement for a held-out
+Vietnamese two-row test set. The detailed result is in
+`artifacts/online_test_metrics.json`.
+
 ## Reproduce pruning
 
 ```powershell
