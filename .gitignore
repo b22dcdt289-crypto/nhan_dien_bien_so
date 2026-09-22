@@ -25,3 +25,6 @@ artifacts/*
 !artifacts/independent_pipeline_metrics.json
 !artifacts/independent_model_report.md
 !artifacts/online_test_metrics.json
+hardware/**/db/
+hardware/**/incremental_db/
+hardware/**/output_files/
