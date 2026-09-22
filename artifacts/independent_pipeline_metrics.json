@@ -1,0 +1,86 @@
+{
+  "source": "data\\OCR\\OCR\\images\\train(1)\\detection",
+  "data_root": "data\\independent_chars_train1",
+  "dense_validation_character_accuracy": 0.9043417226511581,
+  "structured_validation_character_accuracy": 0.9058457836157625,
+  "structured_channels": [
+    4,
+    10,
+    100,
+    70
+  ],
+  "dense_macs_per_character": 418704,
+  "structured_macs_per_character": 212920,
+  "mac_reduction_ratio": 0.491478466888303,
+  "structured_macs_per_plate": {
+    "8": 1703360,
+    "9": 1916280,
+    "10": 2129200
+  },
+  "end_to_end_validation": {
+    "validation_source_images": 2489,
+    "character_accuracy": 0.9058457836157625,
+    "plate_exact_match": 0.7802330253113701,
+    "by_type": {
+      "one_row": {
+        "plates": 1454,
+        "plate_exact_match": 0.8865199449793673,
+        "character_accuracy": 0.9719829461411293
+      },
+      "two_row_motorcycle": {
+        "plates": 334,
+        "plate_exact_match": 0.2964071856287425,
+        "character_accuracy": 0.6038382453735435
+      },
+      "two_row_car": {
+        "plates": 701,
+        "plate_exact_match": 0.7902995720399429,
+        "character_accuracy": 0.9277326106594399
+      }
+    }
+  },
+  "prepare": {
+    "source": "data\\OCR\\OCR\\images\\train(1)\\detection",
+    "source_images": 37297,
+    "accepted_images": 24888,
+    "skipped_images": 12409,
+    "skip_rate": 0.3327077244818618,
+    "character_crops": 199412,
+    "source_types": {
+      "two_row_motorcycle": 5593,
+      "one_row": 19086,
+      "two_row_car": 12618
+    },
+    "accepted_types": {
+      "one_row": 14490,
+      "two_row_motorcycle": 3330,
+      "two_row_car": 7068
+    },
+    "skip_reasons": {
+      "segmentation_or_count": 12409
+    },
+    "condition_skip_rates": {
+      "blur": {
+        "images": 88,
+        "skipped": 39,
+        "skip_rate": 0.4431818181818182
+      },
+      "angled": {
+        "images": 95,
+        "skipped": 41,
+        "skip_rate": 0.43157894736842106
+      }
+    },
+    "blur_threshold_laplacian_variance": 80.0,
+    "angle_threshold_degrees": 8.0,
+    "perspective_correction": {
+      "attempted": 24888,
+      "applied": 14154
+    },
+    "row_classification": {
+      "1": 16131,
+      "2": 8757
+    }
+  },
+  "checkpoint": "artifacts\\independent_lenet5_structured50_train1.pt"
+}

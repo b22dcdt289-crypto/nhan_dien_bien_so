@@ -20,3 +20,7 @@ artifacts/*
 !artifacts/lenet5_ocr_pruned50_final.pt
 !artifacts/pruned50_metrics.json
 !artifacts/model_report_pruned50.md
+!artifacts/independent_lenet5_dense_train1.pt
+!artifacts/independent_lenet5_structured50_train1.pt
+!artifacts/independent_pipeline_metrics.json
+!artifacts/independent_model_report.md

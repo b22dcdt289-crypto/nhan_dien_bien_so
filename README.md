@@ -77,6 +77,51 @@ structured model reached 89.43% character validation accuracy. This is lower
 than the 95.22% OCR-labelled baseline because automatic contour segmentation
 rejects or misaligns many full-plate images; it is not a plate-level accuracy.
 
+## Independent pipeline without YOLOv5
+
+The independent prototype replaces YOLOv5 with classical image processing that
+can be reimplemented in FPGA HDL: contour/morphology candidate detection,
+perspective correction, row classification, left-to-right sorting within each
+row, and LeNet-5 OCR. The laptop is used only as a reference runner during
+development; a standalone FPGA implementation must implement these same stages
+in hardware.
+
+Prepare the full `train(1)` source and train the approximately 50% structured
+LeNet-5 model:
+
+```powershell
+.venv\Scripts\python.exe train_independent_structured.py --mode all --clean --dense-epochs 3 --structured-epochs 8
+```
+
+Run the independent inference pipeline without YOLOv5:
+
+```powershell
+.venv\Scripts\python.exe recognize_independent.py path\to\frame.jpg
+```
+
+The completed run used all 37,297 source images, accepted 24,888 images and
+created 199,412 character crops. Character validation accuracy was 90.58% and
+plate-level exact match was 78.02%. By source type, one-row plates reached
+97.20% character accuracy, two-row car plates 92.77%, and two-row motorcycle
+plates 60.38%. The lower motorcycle result shows that the row/character
+segmentation stage still needs targeted improvement; it should not be reported
+as a 95%+ end-to-end system yet.
+
+The compact model uses channels `(4, 10, 100, 70)`: 212,920 MAC per character,
+about 49.15% fewer than dense LeNet-5. The resulting MAC counts are 1,703,360
+for 8 characters, 1,916,280 for 9 characters and 2,129,200 for 10 characters.
+The preparation skip rate was 33.27% overall; using Laplacian variance below
+80 as a blur heuristic, the skip rate was 44.32% (39/88), and using an estimated
+perspective angle above 8 degrees, it was 43.16% (41/95). These are preprocessing
+heuristics, not camera ground-truth labels, and are stored in
+`artifacts/independent_pipeline_metrics.json`.
+
+During training-data preparation, the plate text encoded in each filename is
+used only to reject a crop when the detected component count does not match the
+known label. At inference, no text label is available: the prototype accepts
+only 8, 9 or 10 detected characters and skips an ambiguous frame instead of
+returning a fabricated plate string.
+
 ## Reproduce pruning
 
 ```powershell
