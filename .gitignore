@@ -25,6 +25,9 @@ artifacts/*
 !artifacts/independent_pipeline_metrics.json
 !artifacts/independent_model_report.md
 !artifacts/online_test_metrics.json
+!artifacts/lenet5_dense_baseline_train1.pt
+!artifacts/dense_baseline_detailed_metrics.json
+!artifacts/dense_baseline_plate_results.csv
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/

@@ -116,6 +116,36 @@ perspective angle above 8 degrees, it was 43.16% (41/95). These are preprocessin
 heuristics, not camera ground-truth labels, and are stored in
 `artifacts/independent_pipeline_metrics.json`.
 
+## Dense baseline without pruning
+
+To measure the effect of pruning, train the full LeNet-5 from scratch on the
+same prepared `train(1)` character set:
+
+```powershell
+.venv\Scripts\python.exe train_dense_baseline.py --epochs 5
+```
+
+The 5-epoch dense baseline reached 91.26% validation character accuracy and
+81.48% exact plate accuracy on 2,489 validation plates. It uses 418,704 MAC
+per character. Its detailed per-plate results are saved in
+`artifacts/dense_baseline_detailed_metrics.json` and the spreadsheet-friendly
+`artifacts/dense_baseline_plate_results.csv`.
+
+| Group | Plates | Character accuracy | Exact plate accuracy | Skip rate during preparation |
+|---|---:|---:|---:|---:|
+| All validation plates | 2,489 | 91.26% | 81.48% | 33.27% |
+| One-row | 1,454 | 97.64% | 91.61% | 24.08% |
+| Two-row car | 701 | 93.22% | 81.74% | 43.98% |
+| Two-row motorcycle | 334 | 62.41% | 36.83% | 40.46% |
+
+Compared with the current structured-50% checkpoint, the dense model improves
+the overall validation result by about 0.68 percentage points in character
+accuracy and 3.45 points in exact plate accuracy. The main limitation is not
+only pruning: two-row motorcycle segmentation/data quality is the dominant
+failure mode. The dense run still has 461 wrong plates and 1,743 wrong
+character positions; the most frequent confusions include `2→1`, `1→2`,
+`9→1`, `9→2` and `6→3`.
+
 During training-data preparation, the plate text encoded in each filename is
 used only to reject a crop when the detected component count does not match the
 known label. At inference, no text label is available: the prototype accepts
