@@ -146,6 +146,46 @@ failure mode. The dense run still has 461 wrong plates and 1,743 wrong
 character positions; the most frequent confusions include `2→1`, `1→2`,
 `9→1`, `9→2` and `6→3`.
 
+## Enhanced plate crops and matched dense/pruned retraining
+
+The `train(1)` filenames contain labeled plate boxes. The enhanced preparation
+uses those boxes to crop the plate, applies perspective correction, then mild
+bilateral denoising, CLAHE, and a restrained unsharp mask before connected
+component segmentation. It writes a separate dataset directory so the prior
+prepared crops remain intact. Training and inference use the same enhancement
+recorded in the checkpoint.
+
+The enhanced run accepted 25,286/37,297 source images (32.20% skipped), then
+trained dense LeNet-5 for five epochs and structured-50% for eight epochs on
+the same data split. On the 2,529 labeled validation plates, dense reached
+91.43% character accuracy / 80.78% exact plate; pruning reached 91.28% /
+80.31%. Thus pruning reduced MAC by 49.15% with a 0.16 percentage-point
+character-accuracy difference and 0.47-point exact-plate difference.
+
+The quality gap is concentrated in two-row motorcycle plates: dense exact
+plate accuracy was 35.39% for motorcycles versus 91.80% for one-row plates.
+When the segmenter is rerun without using the known label length, ROI-only
+exact plate accuracy is 71.19% dense and 70.67% pruned, with 12.66% skipped.
+This evaluation uses the ground-truth plate box. A separate full-frame check
+of the current contour/morphology localizer found proposals on nearly every
+image but only 4.67% IoU≥0.50 on two-row cars and 8.99% on motorcycles, so
+there is not yet a credible end-to-end camera accuracy. See
+`artifacts/enhanced_crop_training_comparison.md` for per-type/per-length
+tables, localization IoU, skip rates, and causes. The CSV files list the
+expected and predicted string for every validation plate.
+
+To reproduce:
+
+```powershell
+.venv\Scripts\python.exe train_independent_structured.py --mode all --source "data/OCR/OCR/images/train(1)/detection" --data data/independent_chars_train1_enhanced --metrics artifacts/independent_pipeline_enhanced_metrics.json --enhancement clahe_sharp --clean --dense-epochs 5 --structured-epochs 8 --dense-output artifacts/independent_lenet5_dense_enhanced_train1.pt --output artifacts/independent_lenet5_structured50_enhanced_train1.pt
+```
+
+Use the enhanced model at inference with:
+
+```powershell
+.venv\Scripts\python.exe recognize_independent.py path\to\frame.jpg --model artifacts/independent_lenet5_structured50_enhanced_train1.pt
+```
+
 During training-data preparation, the plate text encoded in each filename is
 used only to reject a crop when the detected component count does not match the
 known label. At inference, no text label is available: the prototype accepts

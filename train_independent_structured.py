@@ -174,12 +174,34 @@ def classify_and_sort_rows(boxes, height: int):
     return [top, bottom], 2
 
 
-def segment_characters(plate: np.ndarray, expected_count: int | None = None):
+def enhance_plate_for_ocr(gray: np.ndarray, method: str = "clahe_sharp") -> np.ndarray:
+    """Normalize local contrast and selectively sharpen strokes before segmentation."""
+    if method == "none":
+        return gray
+    if method not in {"clahe", "clahe_sharp"}:
+        raise ValueError(f"Unknown plate enhancement method: {method}")
+    # Mild edge-preserving denoising avoids boosting sensor/compression noise.
+    denoised = cv2.bilateralFilter(gray, 5, 25, 25)
+    normalized = cv2.createCLAHE(clipLimit=1.8, tileGridSize=(8, 8)).apply(denoised)
+    if method == "clahe":
+        return normalized
+    low_frequency = cv2.GaussianBlur(normalized, (0, 0), 1.0)
+    sharpened = cv2.addWeighted(normalized, 1.35, low_frequency, -0.35, 0)
+    return np.clip(sharpened, 0, 255).astype(np.uint8)
+
+
+def segment_characters(
+    plate: np.ndarray,
+    expected_count: int | None = None,
+    enhancement: str = "none",
+):
     gray = plate if plate.ndim == 2 else cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
     height = 160
     width = max(80, int(round(gray.shape[1] * height / max(1, gray.shape[0]))))
     gray = cv2.resize(gray, (width, height), interpolation=cv2.INTER_CUBIC)
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    gray = enhance_plate_for_ocr(gray, enhancement)
+    if enhancement == "none":
+        gray = cv2.GaussianBlur(gray, (3, 3), 0)
     candidates = []
     masks = [
         cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1],
@@ -243,11 +265,12 @@ def condition_bucket(counter: dict, name: str):
 
 
 def prepare_dataset(args):
-    if args.clean and DATA_ROOT.exists():
-        shutil.rmtree(DATA_ROOT)
+    data_root = args.data
+    if args.clean and data_root.exists():
+        shutil.rmtree(data_root)
     for split in ("train", "val"):
         for char in CLASS_NAMES:
-            (DATA_ROOT / split / char).mkdir(parents=True, exist_ok=True)
+            (data_root / split / char).mkdir(parents=True, exist_ok=True)
     random.seed(42)
     paths = source_files(args.source)
     random.shuffle(paths)
@@ -283,7 +306,7 @@ def prepare_dataset(args):
         for condition, enabled in (("blur", blurred), ("angled", angled)):
             if enabled:
                 condition_bucket(condition_stats, condition)["images"] += 1
-        segmented = segment_characters(corrected, expected_count=len(text))
+        segmented = segment_characters(corrected, expected_count=len(text), enhancement=args.enhancement)
         if segmented is None:
             reasons["segmentation_or_count"] += 1
             for condition, enabled in (("blur", blurred), ("angled", angled)):
@@ -295,9 +318,9 @@ def prepare_dataset(args):
         crop_files = []
         safe_stem = f"{plate_type}_{path.stem}"
         for char_index, (char, crop) in enumerate(zip(text, crops)):
-            out = DATA_ROOT / split / char / f"{safe_stem}_{char_index:02d}.png"
+            out = data_root / split / char / f"{safe_stem}_{char_index:02d}.png"
             cv2.imwrite(str(out), crop)
-            crop_files.append(str(out.relative_to(DATA_ROOT)))
+            crop_files.append(str(out.relative_to(data_root)))
             total_crops += 1
         accepted += 1
         accepted_types[plate_type] += 1
@@ -311,6 +334,7 @@ def prepare_dataset(args):
             "perspective_corrected": corrected_ok,
             "angle_deg": round(angle, 3),
             "blur_score": round(blur_score, 3),
+            "enhancement": args.enhancement,
             "crop_files": crop_files,
         })
         if index % 1000 == 0:
@@ -336,9 +360,9 @@ def prepare_dataset(args):
         },
         "row_classification": dict(Counter(record["row_count"] for record in records)),
     }
-    (DATA_ROOT / "manifest.json").write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
-    METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    METRICS_PATH.write_text(json.dumps({"prepare": summary}, ensure_ascii=False, indent=2), encoding="utf-8")
+    (data_root / "manifest.json").write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+    args.metrics.parent.mkdir(parents=True, exist_ok=True)
+    args.metrics.write_text(json.dumps({"prepare": summary}, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2), flush=True)
 
 
@@ -492,7 +516,7 @@ def train_models(args):
         print(f"dense epoch {epoch:02d}/{args.dense_epochs} train_acc={train_acc:.4f} val_acc={val_acc:.4f}", flush=True)
         if val_acc >= best_dense:
             best_dense = val_acc
-            torch.save({"model": dense.state_dict(), "classes": CLASS_NAMES, "val_acc": val_acc, "arch": "LeNet5"}, args.dense_output)
+            torch.save({"model": dense.state_dict(), "classes": CLASS_NAMES, "val_acc": val_acc, "arch": "LeNet5", "enhancement": args.enhancement}, args.dense_output)
     small = LeNet5Structured50(len(CLASS_NAMES)).to(device)
     transfer_dense_to_structured(dense, small)
     small_opt = torch.optim.AdamW(small.parameters(), lr=args.structured_lr, weight_decay=1e-5)
@@ -506,12 +530,13 @@ def train_models(args):
             torch.save({
                 "model": small.state_dict(), "classes": CLASS_NAMES, "val_acc": val_acc,
                 "arch": "LeNet5Structured50", "channels": small.channels, "macs_per_character": small.macs(),
+                "enhancement": args.enhancement,
             }, args.output)
     small.load_state_dict(torch.load(args.output, map_location=device, weights_only=False)["model"])
     end_to_end = plate_metrics(small, device, args.data)
     prepare_metrics = {}
-    if (METRICS_PATH).exists():
-        prepare_metrics = json.loads(METRICS_PATH.read_text(encoding="utf-8")).get("prepare", {})
+    if args.metrics.exists():
+        prepare_metrics = json.loads(args.metrics.read_text(encoding="utf-8")).get("prepare", {})
     dense_macs = 418704
     metrics = {
         "source": str(args.source),
@@ -526,8 +551,9 @@ def train_models(args):
         "end_to_end_validation": end_to_end,
         "prepare": prepare_metrics,
         "checkpoint": str(args.output),
+        "enhancement": args.enhancement,
     }
-    METRICS_PATH.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
+    args.metrics.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(metrics, ensure_ascii=False, indent=2), flush=True)
 
 
@@ -537,7 +563,7 @@ def evaluate_checkpoint(args):
     model = LeNet5Structured50(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     end_to_end = plate_metrics(model, device, args.data)
-    prepare_metrics = json.loads(METRICS_PATH.read_text(encoding="utf-8")).get("prepare", {})
+    prepare_metrics = json.loads(args.metrics.read_text(encoding="utf-8")).get("prepare", {})
     dense_accuracy = None
     if args.dense_output.exists():
         dense_accuracy = torch.load(args.dense_output, map_location="cpu", weights_only=False).get("val_acc")
@@ -554,8 +580,9 @@ def evaluate_checkpoint(args):
         "end_to_end_validation": end_to_end,
         "prepare": prepare_metrics,
         "checkpoint": str(args.eval_checkpoint),
+        "enhancement": checkpoint.get("enhancement", "none"),
     }
-    METRICS_PATH.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
+    args.metrics.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(metrics, ensure_ascii=False, indent=2), flush=True)
 
 
@@ -564,6 +591,8 @@ def main():
     parser.add_argument("--mode", choices=("prepare", "train", "eval", "all"), default="all")
     parser.add_argument("--source", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--data", type=Path, default=DATA_ROOT)
+    parser.add_argument("--metrics", type=Path, default=METRICS_PATH)
+    parser.add_argument("--enhancement", choices=("none", "clahe", "clahe_sharp"), default="none")
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--blur-threshold", type=float, default=80.0)
     parser.add_argument("--angle-threshold", type=float, default=8.0)

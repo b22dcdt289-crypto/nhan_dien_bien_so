@@ -1,0 +1,87 @@
+{
+  "source": "data\\OCR\\OCR\\images\\train(1)\\detection",
+  "data_root": "data\\independent_chars_train1_enhanced",
+  "dense_validation_character_accuracy": 0.914337818522352,
+  "structured_validation_character_accuracy": 0.9127606091971019,
+  "structured_channels": [
+    4,
+    10,
+    100,
+    70
+  ],
+  "dense_macs_per_character": 418704,
+  "structured_macs_per_character": 212920,
+  "mac_reduction_ratio": 0.491478466888303,
+  "structured_macs_per_plate": {
+    "8": 1703360,
+    "9": 1916280,
+    "10": 2129200
+  },
+  "end_to_end_validation": {
+    "validation_source_images": 2529,
+    "character_accuracy": 0.9127606091971019,
+    "plate_exact_match": 0.8030842230130486,
+    "by_type": {
+      "one_row": {
+        "plates": 1488,
+        "plate_exact_match": 0.9133064516129032,
+        "character_accuracy": 0.9793525363242417
+      },
+      "two_row_motorcycle": {
+        "plates": 356,
+        "plate_exact_match": 0.3455056179775281,
+        "character_accuracy": 0.6443798449612403
+      },
+      "two_row_car": {
+        "plates": 685,
+        "plate_exact_match": 0.8014598540145985,
+        "character_accuracy": 0.9214601769911505
+      }
+    }
+  },
+  "prepare": {
+    "source": "data\\OCR\\OCR\\images\\train(1)\\detection",
+    "source_images": 37297,
+    "accepted_images": 25286,
+    "skipped_images": 12011,
+    "skip_rate": 0.322036624929619,
+    "character_crops": 202748,
+    "source_types": {
+      "two_row_motorcycle": 5593,
+      "one_row": 19086,
+      "two_row_car": 12618
+    },
+    "accepted_types": {
+      "one_row": 14494,
+      "two_row_motorcycle": 3478,
+      "two_row_car": 7314
+    },
+    "skip_reasons": {
+      "segmentation_or_count": 12011
+    },
+    "condition_skip_rates": {
+      "blur": {
+        "images": 88,
+        "skipped": 36,
+        "skip_rate": 0.4090909090909091
+      },
+      "angled": {
+        "images": 95,
+        "skipped": 39,
+        "skip_rate": 0.4105263157894737
+      }
+    },
+    "blur_threshold_laplacian_variance": 80.0,
+    "angle_threshold_degrees": 8.0,
+    "perspective_correction": {
+      "attempted": 25286,
+      "applied": 14317
+    },
+    "row_classification": {
+      "1": 16225,
+      "2": 9061
+    }
+  },
+  "checkpoint": "artifacts\\independent_lenet5_structured50_enhanced_train1.pt",
+  "enhancement": "clahe_sharp"
+}

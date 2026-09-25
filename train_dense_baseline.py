@@ -13,16 +13,17 @@ from PIL import Image
 from torch import nn
 from torch.utils.data import DataLoader
 
-from train_independent_structured import FolderChars, LeNet5, run_epoch
+from train_independent_structured import FolderChars, LeNet5, LeNet5Structured50, run_epoch
 from train_lenet5 import CLASS_NAMES
 
 
 DENSE_MACS_PER_CHARACTER = 418704
 
 
-def load_model(path: Path, device: torch.device) -> LeNet5:
+def load_model(path: Path, device: torch.device, architecture: str = "dense") -> nn.Module:
     checkpoint = torch.load(path, map_location=device, weights_only=False)
-    model = LeNet5(len(CLASS_NAMES)).to(device)
+    model_type = LeNet5 if architecture == "dense" else LeNet5Structured50
+    model = model_type(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     model.eval()
     return model
@@ -39,7 +40,8 @@ def predict_plate(model: nn.Module, device: torch.device, data_root: Path, recor
     return "".join(CLASS_NAMES[index] for index in logits.argmax(1).cpu().tolist())
 
 
-def evaluate_detailed(model: nn.Module, device: torch.device, data_root: Path, checkpoint: Path) -> dict:
+def evaluate_detailed(model: nn.Module, device: torch.device, data_root: Path, checkpoint: Path, architecture: str) -> dict:
+    macs_per_character = DENSE_MACS_PER_CHARACTER if architecture == "dense" else LeNet5Structured50.macs()
     manifest = json.loads((data_root / "manifest.json").read_text(encoding="utf-8"))
     records = [record for record in manifest if record["split"] == "val"]
     details = []
@@ -57,7 +59,7 @@ def evaluate_detailed(model: nn.Module, device: torch.device, data_root: Path, c
             stats["exact"] += int(exact)
             stats["chars"] += len(expected)
             stats["correct_chars"] += correct_chars
-            stats["macs"] += DENSE_MACS_PER_CHARACTER * len(expected)
+            stats["macs"] += macs_per_character * len(expected)
         details.append(
             {
                 "source": record["source"],
@@ -72,7 +74,7 @@ def evaluate_detailed(model: nn.Module, device: torch.device, data_root: Path, c
                 "perspective_corrected": record["perspective_corrected"],
                 "angle_deg": record["angle_deg"],
                 "blur_score": record["blur_score"],
-                "macs_this_plate": DENSE_MACS_PER_CHARACTER * len(expected),
+                "macs_this_plate": macs_per_character * len(expected),
             }
         )
 
@@ -90,8 +92,8 @@ def evaluate_detailed(model: nn.Module, device: torch.device, data_root: Path, c
 
     return {
         "checkpoint": str(checkpoint),
-        "model": "LeNet5_dense_no_pruning",
-        "macs_per_character": DENSE_MACS_PER_CHARACTER,
+        "model": "LeNet5_dense_no_pruning" if architecture == "dense" else "LeNet5_structured_pruning_50_percent",
+        "macs_per_character": macs_per_character,
         "groups": {key: finish(value) for key, value in sorted(aggregate.items())},
         "details": details,
     }
@@ -115,6 +117,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("artifacts/lenet5_dense_baseline_train1.pt"))
     parser.add_argument("--metrics", type=Path, default=Path("artifacts/dense_baseline_detailed_metrics.json"))
     parser.add_argument("--csv", type=Path, default=Path("artifacts/dense_baseline_plate_results.csv"))
+    parser.add_argument("--architecture", choices=("dense", "structured"), default="dense")
+    parser.add_argument("--prepare-metrics", type=Path, default=Path("artifacts/independent_pipeline_metrics.json"))
     parser.add_argument("--evaluate-only", action="store_true")
     args = parser.parse_args()
 
@@ -127,6 +131,8 @@ def main() -> None:
         val_set = FolderChars(args.data, "val", augment=False)
         train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=0)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, shuffle=False, num_workers=0)
+        if args.architecture != "dense":
+            parser.error("Training through this script supports dense only; use --evaluate-only for structured checkpoints.")
         model = LeNet5(len(CLASS_NAMES)).to(device)
         optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
         loss_fn = nn.CrossEntropyLoss()
@@ -152,15 +158,15 @@ def main() -> None:
         history = []
         best_val = torch.load(args.output, map_location="cpu", weights_only=False).get("val_acc")
 
-    model = load_model(args.output, device)
-    evaluation = evaluate_detailed(model, device, args.data, args.output)
+    model = load_model(args.output, device, args.architecture)
+    evaluation = evaluate_detailed(model, device, args.data, args.output, args.architecture)
     evaluation["training"] = {
         "epochs": args.epochs if not args.evaluate_only else None,
         "best_validation_character_accuracy": best_val,
         "history": history,
     }
 
-    prepare_path = Path("artifacts/independent_pipeline_metrics.json")
+    prepare_path = args.prepare_metrics
     if prepare_path.exists():
         prepare = json.loads(prepare_path.read_text(encoding="utf-8")).get("prepare", {})
         source_types = prepare.get("source_types", {})
