@@ -337,3 +337,68 @@ Vietnamese two-row test set. The detailed result is in
 ```powershell
 .venv\Scripts\python.exe prune_lenet5_ocr.py --data data/OCR/OCR --init artifacts/lenet5_ocr_97target_final.pt --amount 0.25 --epochs 10 --output artifacts/lenet5_ocr_pruned25_final.pt
 ```
+
+## Mixed `train` + `train(1)` perspective experiment (1,000 plates)
+
+The latest run uses a dense 30-class LeNet-5, initialized from scratch and
+trained for 40 epochs on CPU; it does not use YOLO or pruning. The 1,000
+training identities comprise 949 filename-labeled one-row crops from
+`data/OCR/OCR/images/train(1)/detection/one_row` and 51 selected
+`CarLongPlate` crops from `data/OCR/OCR/images/train`. Validation (300) and
+test (500) come from the primary source, are identity-disjoint from training,
+and were excluded from the previous 1,000-plate experiment. Perspective
+variants were generated with Python/OpenCV for training only: 1,767 variants
+passed the same character-count segmentation check; 233 synthetic variants
+were rejected. Original files were not changed or deleted. A visual preview
+is stored locally at
+`data/one_row_combined_frontal_1000_perspective_v1/review/perspective_examples.png`.
+
+On the held-out 500 plate ROIs, the selected checkpoint scored 3,915/3,971
+characters correct (98.59%) conditional on successful ground-truth-length
+character segmentation. Exact plate match under that segmentation was
+472/500 (94.40%; Wilson 95% CI 92.03–96.10%). In the more realistic ROI path,
+which must infer the character count and counts skips as errors, it got
+471/500 (94.20%), with 500/500 attempted and four character-count mismatches.
+These are cropped plate-ROI results, not full-frame detection, live camera, or
+DE10-Lite measurements. The exact-match target of 96% was not reached, so the
+conditional 3,000-plate stage was not started.
+
+The character-level score is higher than whole-plate exact match because a
+single incorrect character makes the entire plate string incorrect. The test
+set is also imbalanced: 471/500 labels have eight characters, only 29 have
+seven, and uncommon letters have very small support (for example D=3, N=7,
+M=17). The legacy `train` source had 414 car-like candidates; only 90 passed
+the initial OCR/consistency audit and 51 distinct eligible crops were selected
+after identity checks and visual review. In 90 audited legacy label files, the
+character annotations disagreed with the teacher OCR output; this flags the
+legacy labels as unreliable, but teacher predictions are not independent
+ground truth. On `train(1)`, 7,189 frames failed crop-quality/geometry/
+segmentation filters, 1,954 frames belonged to identities held out because
+they appeared in the previous experiment, and duplicate frames were reduced
+to one sample per identity. Rejections were not deleted. Aggregate reason
+counts and per-class, per-position, per-length, confidence interval, and
+confusion-matrix metrics are in
+`artifacts/mixed_frontal_1000_perspective_bestformat_v2_metrics.json` and
+`artifacts/mixed_frontal_1000_perspective_bestformat_v2_metrics_confusion_matrix.csv`.
+
+The dense network uses 418,200 MAC per character (about 3,345,600 MAC for an
+eight-character string), independent of whether layout metadata says one or
+two rows once characters have been segmented. It has 63,406 parameters; raw
+FP32 weights use about 247.7 KiB (saved checkpoint about 253.6 KiB). MAC
+counts cover only LeNet character inference, not Python/OpenCV rectification
+and segmentation: 7, 8, and 9 characters take 2,927,400, 3,345,600, and
+3,763,800 MAC respectively. The test contains mostly one-row car crops, so
+these scores must not be generalized to two-row plates.
+
+Run training on the already prepared local data:
+
+```powershell
+.venv\Scripts\python.exe train_one_row_1000.py --data data/one_row_combined_frontal_1000_perspective_v1 --epochs 40 --output artifacts/lenet5_dense_mixed_frontal_1000_perspective_bestformat_v2.pt --metrics artifacts/mixed_frontal_1000_perspective_bestformat_v2_metrics.json --test-csv artifacts/mixed_frontal_1000_perspective_bestformat_v2_test_predictions.csv --history-csv artifacts/mixed_frontal_1000_perspective_bestformat_v2_history.csv
+```
+
+To prepare another dataset from source, choose a new, empty output directory
+with `prepare_combined_frontal_1000.py --output ...`, then pass the same path
+to `--data`. Prepared plate images, source data, the local visual-correction
+JSON, and per-plate test predictions are intentionally not versioned; the
+checkpoint and aggregate metrics are versioned. This keeps image-level plate
+identifiers out of the Git repository.

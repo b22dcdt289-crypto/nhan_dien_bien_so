@@ -53,6 +53,11 @@ artifacts/*
 !artifacts/front_one_row_1000_30class_metrics.json
 !artifacts/front_one_row_1000_30class_metrics_confusion_matrix.csv
 !artifacts/front_one_row_1000_30class_training_history.csv
+!artifacts/lenet5_dense_mixed_frontal_1000_perspective_bestformat_v2.pt
+!artifacts/mixed_frontal_1000_perspective_bestformat_v2_metrics.json
+!artifacts/mixed_frontal_1000_perspective_bestformat_v2_metrics_confusion_matrix.csv
+!artifacts/mixed_frontal_1000_perspective_bestformat_v2_history.csv
+!artifacts/mixed_frontal_1000_perspective_bestformat_v2_report.md
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/

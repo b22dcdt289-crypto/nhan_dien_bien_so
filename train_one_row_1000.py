@@ -47,14 +47,41 @@ def read_char_tensor(path: Path) -> torch.Tensor:
     return torch.from_numpy((pixels - 0.5) / 0.5).unsqueeze(0)
 
 
-def predict_crop_files(model, device, root: Path, crop_files: list[str]):
+def plate_format_indices(logits: torch.Tensor, length: int):
+    """Apply the standard one-row car-plate grammar after the LeNet classifier."""
+    raw_indices = logits.argmax(dim=1)
+    if length not in (7, 8, 9) or logits.shape[0] != length:
+        return raw_indices
+    digits = [CLASS_NAMES.index(character) for character in "0123456789"]
+    letters = [CLASS_NAMES.index(character) for character in CLASS_NAMES if character.isalpha()]
+    letter_positions = {2} if length in (7, 8) else {2, 3}
+    constrained = raw_indices.clone()
+    for position in range(length):
+        allowed = letters if position in letter_positions else digits
+        local_index = int(logits[position, allowed].argmax().item())
+        constrained[position] = allowed[local_index]
+    return constrained
+
+
+def decode_indices(indices: torch.Tensor):
+    return "".join(CLASS_NAMES[index] for index in indices.detach().cpu().tolist())
+
+
+def predict_crop_files(model, device, root: Path, crop_files: list[str], plate_length: int):
     batch = torch.stack([read_char_tensor(root / rel) for rel in crop_files]).to(device)
     with torch.no_grad():
         logits = model(batch)
         probs = torch.softmax(logits, dim=1)
-        confidence, indices = probs.max(1)
-    text = "".join(CLASS_NAMES[index] for index in indices.cpu().tolist())
-    return text, confidence.cpu().tolist(), indices.cpu().tolist()
+        confidence = probs.max(1).values
+        raw_indices = logits.argmax(dim=1)
+        constrained_indices = plate_format_indices(logits, plate_length)
+    return (
+        decode_indices(raw_indices),
+        decode_indices(constrained_indices),
+        confidence.cpu().tolist(),
+        raw_indices.cpu().tolist(),
+        constrained_indices.cpu().tolist(),
+    )
 
 
 def load_checkpoint(path: Path, device: torch.device):
@@ -96,14 +123,19 @@ def class_report(confusion: np.ndarray):
 def evaluate_split(model, device, root: Path, records: list[dict], split: str):
     records = [record for record in records if record["split"] == split]
     confusion = np.zeros((len(CLASS_NAMES), len(CLASS_NAMES)), dtype=np.int64)
+    raw_confusion = np.zeros((len(CLASS_NAMES), len(CLASS_NAMES)), dtype=np.int64)
     position_stats = defaultdict(lambda: {"correct": 0, "total": 0})
-    by_length = defaultdict(lambda: {"plates": 0, "segmentable_plates": 0, "exact": 0, "correct_chars": 0, "characters": 0})
+    raw_position_stats = defaultdict(lambda: {"correct": 0, "total": 0})
+    by_length = defaultdict(lambda: {
+        "plates": 0, "segmentable_plates": 0, "exact": 0, "raw_exact": 0,
+        "correct_chars": 0, "raw_correct_chars": 0, "characters": 0,
+    })
     plate_rows = []
-    exact = correct_chars = total_chars = 0
+    exact = raw_exact = correct_chars = raw_correct_chars = total_chars = 0
     segmentable_plates = 0
     char_confidence = []
-    runtime_exact = runtime_attempted_exact = runtime_attempts = 0
-    runtime_length_mismatch = runtime_edit_distance = 0
+    runtime_exact = runtime_raw_exact = runtime_attempts = 0
+    runtime_length_mismatch = runtime_edit_distance = runtime_raw_edit_distance = 0
     runtime_skipped = Counter()
     runtime_detected_counts = Counter()
 
@@ -112,14 +144,20 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
         target = record["text"]
         segmentable = bool(record.get("ground_truth_segmentation_ok", True) and record["crop_files"])
         if segmentable:
-            predicted, confidences, indices = predict_crop_files(model, device, root, record["crop_files"])
+            raw_predicted, predicted, confidences, raw_indices, indices = predict_crop_files(
+                model, device, root, record["crop_files"], len(target)
+            )
             segmentable_plates += 1
         else:
-            predicted, confidences, indices = "", [], []
+            raw_predicted, predicted, confidences, raw_indices, indices = "", "", [], [], []
+        raw_n_correct = sum(expected == actual for expected, actual in zip(target, raw_predicted))
         n_correct = sum(expected == actual for expected, actual in zip(target, predicted))
+        raw_is_exact = target == raw_predicted
         is_exact = target == predicted
+        raw_exact += int(raw_is_exact)
         exact += int(is_exact)
         if segmentable:
+            raw_correct_chars += raw_n_correct
             correct_chars += n_correct
             total_chars += len(target)
         char_confidence.extend(confidences)
@@ -128,17 +166,25 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
             confusion[expected_index, pred_index] += 1
             position_stats[str(position)]["total"] += 1
             position_stats[str(position)]["correct"] += int(expected == actual)
+        for position, (expected, actual, pred_index) in enumerate(zip(target, raw_predicted, raw_indices), 1):
+            expected_index = CLASS_NAMES.index(expected)
+            raw_confusion[expected_index, pred_index] += 1
+            raw_position_stats[str(position)]["total"] += 1
+            raw_position_stats[str(position)]["correct"] += int(expected == actual)
         length_key = str(len(target))
         length = by_length[length_key]
         length["plates"] += 1
+        length["raw_exact"] += int(raw_is_exact)
         length["exact"] += int(is_exact)
         length["segmentable_plates"] += int(segmentable)
         if segmentable:
+            length["raw_correct_chars"] += raw_n_correct
             length["correct_chars"] += n_correct
             length["characters"] += len(target)
 
         corrected_roi = record.get("plate_crop")
         runtime_prediction = ""
+        runtime_raw_prediction = ""
         runtime_status = "segmentation_failed"
         runtime_count = None
         if corrected_roi:
@@ -165,11 +211,15 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
                             tensors.append(torch.from_numpy((pixels - 0.5) / 0.5).unsqueeze(0))
                         with torch.no_grad():
                             logits = model(torch.stack(tensors).to(device))
-                        runtime_prediction = "".join(CLASS_NAMES[index] for index in logits.argmax(1).cpu().tolist())
+                            raw_indices = logits.argmax(dim=1)
+                            constrained_indices = plate_format_indices(logits, runtime_count)
+                        runtime_raw_prediction = decode_indices(raw_indices)
+                        runtime_prediction = decode_indices(constrained_indices)
                         runtime_attempts += 1
                         runtime_edit_distance += edit_distance(target, runtime_prediction)
+                        runtime_raw_edit_distance += edit_distance(target, runtime_raw_prediction)
                         runtime_exact += int(runtime_prediction == target)
-                        runtime_attempted_exact += int(runtime_prediction == target)
+                        runtime_raw_exact += int(runtime_raw_prediction == target)
                         runtime_status = "attempted"
                 else:
                     runtime_status = "segmentation_failed"
@@ -179,15 +229,21 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
             "sample_id": record["sample_id"],
             "source": record["source"],
             "expected": target,
+            "raw_ocr_with_ground_truth_segmentation": raw_predicted,
             "ocr_with_ground_truth_segmentation": predicted,
+            "raw_correct_characters": raw_n_correct,
             "correct_characters": n_correct,
             "total_characters": len(target),
+            "raw_character_accuracy": raw_n_correct / max(1, len(target)),
             "character_accuracy": n_correct / max(1, len(target)),
+            "raw_exact_match_with_ground_truth_segmentation": raw_is_exact,
             "exact_match_with_ground_truth_segmentation": is_exact,
+            "runtime_raw_without_known_count": runtime_raw_prediction,
             "runtime_without_known_count": runtime_prediction,
             "runtime_status": runtime_status,
             "runtime_detected_character_count": runtime_count,
             "runtime_exact_match": runtime_prediction == target,
+            "runtime_raw_exact_match": runtime_raw_prediction == target,
             "macs_for_ground_truth_character_count": MACS_PER_CHARACTER * len(target),
             "ground_truth_segmentation_ok": segmentable,
         })
@@ -201,12 +257,21 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
         }
         for position, stats in sorted(position_stats.items(), key=lambda item: int(item[0]))
     }
+    raw_position_report = {
+        position: {
+            **stats,
+            "accuracy": stats["correct"] / max(1, stats["total"]),
+        }
+        for position, stats in sorted(raw_position_stats.items(), key=lambda item: int(item[0]))
+    }
     length_report = {
         length: {
             **stats,
             "exact_accuracy": stats["exact"] / max(1, stats["plates"]),
+            "raw_exact_accuracy": stats["raw_exact"] / max(1, stats["plates"]),
             "exact_accuracy_among_segmentable": stats["exact"] / max(1, stats["segmentable_plates"]),
             "character_accuracy": stats["correct_chars"] / max(1, stats["characters"]),
+            "raw_character_accuracy": stats["raw_correct_chars"] / max(1, stats["characters"]),
         }
         for length, stats in sorted(by_length.items(), key=lambda item: int(item[0]))
     }
@@ -218,17 +283,23 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
         "character_count": total_chars,
         "character_count_all_plate_labels": sum(len(record["text"]) for record in records),
         "correct_characters": correct_chars,
+        "raw_correct_characters": raw_correct_chars,
         "character_accuracy_conditional_on_ground_truth_segmentation": correct_chars / max(1, total_chars),
+        "raw_character_accuracy_conditional_on_ground_truth_segmentation": raw_correct_chars / max(1, total_chars),
         "character_accuracy_conditional_wilson_95_ci": wilson_interval(correct_chars, total_chars),
         "exact_plates": exact,
+        "raw_exact_plates": raw_exact,
         "plate_exact_accuracy_all_test_plates": exact / max(1, n_plates),
+        "raw_plate_exact_accuracy_all_test_plates": raw_exact / max(1, n_plates),
         "plate_exact_accuracy_conditional_on_ground_truth_segmentation": exact / max(1, segmentable_plates),
         "plate_exact_wilson_95_ci_all_test_plates": wilson_interval(exact, n_plates),
         "mean_max_softmax_confidence_per_character": float(np.mean(char_confidence)) if char_confidence else None,
         "macro_precision_recall_f1_over_characters_with_support": macro,
         "per_character_position": position_report,
+        "raw_per_character_position": raw_position_report,
         "by_label_length": length_report,
         "per_character_class": class_rows,
+        "raw_per_character_class": class_report(raw_confusion)[0],
         "runtime_no_known_count": {
             "ground_truth_roi_not_full_frame": True,
             "attempted": runtime_attempts,
@@ -238,9 +309,13 @@ def evaluate_split(model, device, root: Path, records: list[dict], split: str):
             "detected_character_count_histogram": dict(runtime_detected_counts),
             "exact_plates_all_including_skips": runtime_exact,
             "exact_accuracy_all_including_skips": runtime_exact / max(1, n_plates),
-            "exact_accuracy_among_attempted": runtime_attempted_exact / max(1, runtime_attempts),
+            "raw_exact_plates_all_including_skips": runtime_raw_exact,
+            "raw_exact_accuracy_all_including_skips": runtime_raw_exact / max(1, n_plates),
+            "exact_accuracy_among_attempted": runtime_exact / max(1, runtime_attempts),
+            "raw_exact_accuracy_among_attempted": runtime_raw_exact / max(1, runtime_attempts),
             "character_count_mismatch": runtime_length_mismatch,
             "sum_levenshtein_distance": runtime_edit_distance,
+            "raw_sum_levenshtein_distance": runtime_raw_edit_distance,
             "character_error_rate_by_levenshtein": runtime_edit_distance / max(1, sum(len(record["text"]) for record in records)),
         },
         "macs_per_character": MACS_PER_CHARACTER,
@@ -307,19 +382,24 @@ def main():
     if args.evaluate_only and args.history_csv.is_file():
         with args.history_csv.open(newline="", encoding="utf-8-sig") as handle:
             for row in csv.DictReader(handle):
-                history.append({
+                history_row = {
                     "epoch": int(row["epoch"]),
                     "train_loss": float(row["train_loss"]),
                     "train_character_accuracy": float(row["train_character_accuracy"]),
                     "validation_loss": float(row["validation_loss"]),
                     "validation_character_accuracy": float(row["validation_character_accuracy"]),
-                })
+                }
+                for optional_field in ("validation_plate_exact_accuracy_all_rois", "validation_roi_segmentation_coverage"):
+                    if optional_field in row and row[optional_field] != "":
+                        history_row[optional_field] = float(row[optional_field])
+                history.append(history_row)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     if args.evaluate_only:
         if not args.output.is_file():
             raise FileNotFoundError(f"Checkpoint not found: {args.output}")
         best_model, checkpoint = load_checkpoint(args.output, device)
         best_val = checkpoint.get("validation_character_accuracy", 0.0)
+        best_val_plate_exact = checkpoint.get("validation_roi_exact_accuracy", 0.0)
         print(f"evaluation_only=1 checkpoint={args.output}", flush=True)
     else:
         train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=0)
@@ -328,6 +408,7 @@ def main():
         optimizer = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=1e-5)
         loss_fn = nn.CrossEntropyLoss()
         best_val = -1.0
+        best_val_plate_exact = -1.0
         print(
             f"device={device} training_plates={len(train_records)} train_characters={len(train_set)} "
             f"validation_plates={len(val_records)} validation_characters={len(val_set)} test_plates={len(test_records)} "
@@ -337,17 +418,23 @@ def main():
         for epoch in range(1, args.epochs + 1):
             train_loss, train_accuracy = run_epoch(model, train_loader, loss_fn, optimizer, device, True)
             val_loss, val_accuracy = run_epoch(model, val_loader, loss_fn, optimizer, device, False)
+            val_summary, _, _ = evaluate_split(model, device, args.data, manifest, "val")
+            val_plate_exact = val_summary["runtime_no_known_count"]["exact_accuracy_all_including_skips"]
+            val_roi_coverage = val_summary["runtime_no_known_count"]["coverage"]
             row = {
                 "epoch": epoch,
                 "train_loss": train_loss,
                 "train_character_accuracy": train_accuracy,
                 "validation_loss": val_loss,
                 "validation_character_accuracy": val_accuracy,
+                "validation_plate_exact_accuracy_all_rois": val_plate_exact,
+                "validation_roi_segmentation_coverage": val_roi_coverage,
             }
             history.append(row)
             print(json.dumps(row), flush=True)
-            if val_accuracy > best_val:
+            if val_plate_exact > best_val_plate_exact or (val_plate_exact == best_val_plate_exact and val_accuracy > best_val):
                 best_val = val_accuracy
+                best_val_plate_exact = val_plate_exact
                 torch.save({
                     "model": model.state_dict(),
                     "classes": CLASS_NAMES,
@@ -355,6 +442,7 @@ def main():
                     "training_plates": len(train_records),
                     "training_character_crops": len(train_set),
                     "validation_character_accuracy": best_val,
+                    "validation_roi_exact_accuracy": best_val_plate_exact,
                     "enhancement": manifest[0]["enhancement"],
                     "seed": args.seed,
                 }, args.output)
@@ -369,11 +457,19 @@ def main():
         "classes": CLASS_NAMES,
         "dataset": str(args.data),
         "source": (
-            "train(1) one-row car plates plus deduplicated VNLP mirror"
-            if preparation_metrics and preparation_metrics.get("dataset") == "front-facing, one-row Vietnamese car plates"
-            else "train(1)/detection/one_row"
+            preparation_metrics.get("source_description")
+            if preparation_metrics and preparation_metrics.get("source_description")
+            else (
+                "train(1) one-row car plates plus deduplicated VNLP mirror"
+                if preparation_metrics and preparation_metrics.get("dataset") == "front-facing, one-row Vietnamese car plates"
+                else "train(1)/detection/one_row"
+            )
         ),
-        "label_source": "source filename annotation except eight manually visually confirmed corrections; OCR audit never overwrote labels",
+        "label_source": (
+            preparation_metrics.get("label_policy")
+            if preparation_metrics and preparation_metrics.get("label_policy")
+            else "source filename annotation except eight manually visually confirmed corrections; OCR audit never overwrote labels"
+        ),
         "split_grouping": "unique exact plate label assigned to exactly one split",
         "architecture": "LeNet-5 dense, trained from random initialization; no pruning",
         "preprocessing": manifest[0]["enhancement"],
@@ -382,6 +478,7 @@ def main():
             "epochs_requested": args.epochs,
             "evaluation_only": args.evaluate_only,
             "best_validation_character_accuracy": best_val,
+            "best_validation_exact_plate_accuracy_all_rois": best_val_plate_exact,
             "train_plates": len(train_records),
             "train_characters": len(train_set),
             "validation_plates": len(val_records),
@@ -396,13 +493,15 @@ def main():
         "test": test_summary,
         "interpretation": {
             "ground_truth_segmentation_scores": "Character crops are generated with annotated label length; character accuracy is conditional on segmentable test ROIs, while exact plate accuracy uses all test ROIs and counts segmentation failures as incorrect.",
-            "runtime_no_known_count_scores": "Test plate identities and frames are sampled before checking segmentation; no expected count is passed, and skips count against accuracy. The input is still a ground-truth plate ROI, not a full frame.",
+            "runtime_no_known_count_scores": "Test plate identities and frames are sampled before checking segmentation; no expected count or text is passed, and skips count against accuracy. A fixed domestic one-row format prior constrains positions to digits/series letters; raw unconstrained scores are also reported. The input is still a ground-truth plate ROI, not a full frame.",
+            "decoder_format_prior": "length 7/8: digit,digit,letter,then digits; length 9: digit,digit,two letters,then digits; unsupported lengths remain unconstrained",
             "population_scope": "One-row car plate ROIs passing the frontalness and legibility filters in the preparation metrics; results do not estimate performance on oblique/blurred rejected plates or full-frame detection.",
             "test_is_identity_disjoint": True,
             "uncertainty_interval": "Wilson 95% interval for binary character and exact-plate rates.",
         },
         "epoch_history": history,
         "checkpoint_validation_character_accuracy": checkpoint.get("validation_character_accuracy"),
+        "checkpoint_validation_exact_plate_accuracy_all_rois": checkpoint.get("validation_roi_exact_accuracy"),
     }
     args.metrics.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
     write_csv(args.test_csv, test_rows)
@@ -426,12 +525,16 @@ def main():
         "validation_plates": len(val_records),
         "test_plates": len(test_records),
         "validation_char_accuracy": val_summary["character_accuracy_conditional_on_ground_truth_segmentation"],
+        "validation_raw_char_accuracy": val_summary["raw_character_accuracy_conditional_on_ground_truth_segmentation"],
         "test_char_accuracy_conditional_on_segmentable_rois": test_summary["character_accuracy_conditional_on_ground_truth_segmentation"],
+        "test_raw_char_accuracy_conditional_on_segmentable_rois": test_summary["raw_character_accuracy_conditional_on_ground_truth_segmentation"],
         "test_char_accuracy_conditional_95_ci": test_summary["character_accuracy_conditional_wilson_95_ci"],
         "test_ground_truth_segmentation_coverage": test_summary["ground_truth_segmentation_coverage"],
         "test_exact_plate_accuracy_all_rois_including_segmentation_failures": test_summary["plate_exact_accuracy_all_test_plates"],
+        "test_raw_exact_plate_accuracy_all_rois_including_segmentation_failures": test_summary["raw_plate_exact_accuracy_all_test_plates"],
         "test_exact_plate_95_ci_all_rois": test_summary["plate_exact_wilson_95_ci_all_test_plates"],
         "runtime_roi_exact_all_including_skips": test_summary["runtime_no_known_count"]["exact_accuracy_all_including_skips"],
+        "runtime_roi_raw_exact_all_including_skips": test_summary["runtime_no_known_count"]["raw_exact_accuracy_all_including_skips"],
         "runtime_roi_coverage": test_summary["runtime_no_known_count"]["coverage"],
         "macs_per_character": MACS_PER_CHARACTER,
         "metrics": str(args.metrics),
