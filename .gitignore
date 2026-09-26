@@ -70,6 +70,15 @@ artifacts/*
 !artifacts/channel30_matched_speed_benchmark.json
 !artifacts/channel30_matched_speed_raw.csv
 !artifacts/channel30_matched_structured_comparison.md
+!artifacts/lenet5_cost_hard_channel30_teacher_v1.pt
+!artifacts/lenet5_conv2_pruned_kd_channel30_v1.pt
+!artifacts/channel30_cost_hard_conv2_distill_metrics.json
+!artifacts/channel30_cost_hard_conv2_distill_history.csv
+!artifacts/channel30_cost_hard_conv2_distill_report.md
+!artifacts/channel30_error_breakdown_before.json
+!artifacts/channel30_cost_hard_conv2_speed.json
+!artifacts/channel30_cost_hard_conv2_speed_raw.csv
+!artifacts/channel30_conv2_student_confusion.csv
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/

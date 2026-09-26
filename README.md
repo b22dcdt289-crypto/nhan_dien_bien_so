@@ -425,3 +425,20 @@ formulas, breakdowns, caveats, and reproduction commands. Aggregate metrics,
 training history, confusion matrix, checkpoints, and raw timing samples are
 also saved under `artifacts/channel30_matched_*`. Source/prepared images and
 per-plate predictions are intentionally excluded from Git.
+
+## Cost-sensitive hard mining and Conv2-only student
+
+Building on the matched 30-class `train(1)` run, the dense checkpoint was
+fine-tuned with inverse-square-root class costs and batch hard-example mining.
+That teacher reached 92.56% character accuracy and 84.87% exact-plate accuracy.
+A distilled student copies and freezes Conv1, structurally reduces only Conv2
+from 16 to 8 output channels, and compacts the dependent Conv2-to-FC1 input
+columns. It reached 92.35% character accuracy and 84.23% exact-plate accuracy,
+with 274,200 MAC/character and 38,198 parameters. Its interleaved CPU batch-8
+median was 0.41430 ms, versus 0.44860 ms for the previous dense model and
+0.37070 ms for the more aggressively pruned structured-50 model. This is
+forward-only CPU timing, not a DE10-Lite measurement. Full error breakdown,
+class/position metrics, formulas and caveats are in
+`artifacts/channel30_cost_hard_conv2_distill_report.md`; aggregate metrics and
+raw timing samples are alongside it. The per-plate error CSV contains plate
+text and is local-only, intentionally not versioned.

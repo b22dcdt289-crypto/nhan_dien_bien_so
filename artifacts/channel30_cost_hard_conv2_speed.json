@@ -1,0 +1,206 @@
+{
+  "method": "Interleaved randomized-order PyTorch CPU forward-only benchmark; random N×1×32×32 tensors",
+  "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+  "torch_version": "2.14.0+cpu",
+  "threads": 1,
+  "warmup_forwards_per_model_and_batch": 250,
+  "measured_forwards_per_model_and_batch": 2500,
+  "batch_sizes_characters": [
+    1,
+    7,
+    8,
+    9,
+    10
+  ],
+  "measurement_order": "Within each repeat, model order is shuffled; all four models are measured once before the next repeat.",
+  "models": {
+    "dense_previous": {
+      "1": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.1774,
+        "p95_ms_per_forward": 0.3082499999999997,
+        "mean_ms_per_forward": 0.19981604,
+        "characters_per_second_from_median": 5636.978579481398,
+        "speedup_vs_previous_dense": 1.0,
+        "latency_reduction_vs_previous_dense_percent": 0.0
+      },
+      "7": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4041,
+        "p95_ms_per_forward": 0.7090249999999998,
+        "mean_ms_per_forward": 0.447034,
+        "characters_per_second_from_median": 17322.444939371442,
+        "speedup_vs_previous_dense": 1.0,
+        "latency_reduction_vs_previous_dense_percent": 0.0
+      },
+      "8": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4486,
+        "p95_ms_per_forward": 0.8093899999999995,
+        "mean_ms_per_forward": 0.49592536,
+        "characters_per_second_from_median": 17833.25902808738,
+        "speedup_vs_previous_dense": 1.0,
+        "latency_reduction_vs_previous_dense_percent": 0.0
+      },
+      "9": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4791,
+        "p95_ms_per_forward": 0.7549199999999999,
+        "mean_ms_per_forward": 0.52056264,
+        "characters_per_second_from_median": 18785.22229179712,
+        "speedup_vs_previous_dense": 1.0,
+        "latency_reduction_vs_previous_dense_percent": 0.0
+      },
+      "10": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.5139,
+        "p95_ms_per_forward": 0.8055399999999993,
+        "mean_ms_per_forward": 0.5544082,
+        "characters_per_second_from_median": 19459.038723487058,
+        "speedup_vs_previous_dense": 1.0,
+        "latency_reduction_vs_previous_dense_percent": 0.0
+      }
+    },
+    "structured50_previous": {
+      "1": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.167,
+        "p95_ms_per_forward": 0.2943199999999999,
+        "mean_ms_per_forward": 0.18992219999999999,
+        "characters_per_second_from_median": 5988.0239520958075,
+        "speedup_vs_previous_dense": 1.0622754491017963,
+        "latency_reduction_vs_previous_dense_percent": 5.862457722660652
+      },
+      "7": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.3377,
+        "p95_ms_per_forward": 0.59861,
+        "mean_ms_per_forward": 0.37350884,
+        "characters_per_second_from_median": 20728.4572105419,
+        "speedup_vs_previous_dense": 1.1966242226828547,
+        "latency_reduction_vs_previous_dense_percent": 16.431576342489485
+      },
+      "8": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.3707,
+        "p95_ms_per_forward": 0.6629199999999993,
+        "mean_ms_per_forward": 0.41231675999999995,
+        "characters_per_second_from_median": 21580.79309414621,
+        "speedup_vs_previous_dense": 1.2101429727542488,
+        "latency_reduction_vs_previous_dense_percent": 17.3651359786001
+      },
+      "9": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.3943,
+        "p95_ms_per_forward": 0.6431149999999999,
+        "mean_ms_per_forward": 0.42866984,
+        "characters_per_second_from_median": 22825.25995434948,
+        "speedup_vs_previous_dense": 1.2150646715698707,
+        "latency_reduction_vs_previous_dense_percent": 17.69985389271551
+      },
+      "10": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4174,
+        "p95_ms_per_forward": 0.66441,
+        "mean_ms_per_forward": 0.45402896,
+        "characters_per_second_from_median": 23957.834211787253,
+        "speedup_vs_previous_dense": 1.231193100143747,
+        "latency_reduction_vs_previous_dense_percent": 18.77797236816502
+      }
+    },
+    "cost_sensitive_teacher": {
+      "1": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.1771,
+        "p95_ms_per_forward": 0.2985349999999998,
+        "mean_ms_per_forward": 0.19792424,
+        "characters_per_second_from_median": 5646.527385657821,
+        "speedup_vs_previous_dense": 1.0016939582156974,
+        "latency_reduction_vs_previous_dense_percent": 0.16910935738443378
+      },
+      "7": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4057,
+        "p95_ms_per_forward": 0.6544799999999991,
+        "mean_ms_per_forward": 0.44231892,
+        "characters_per_second_from_median": 17254.128666502344,
+        "speedup_vs_previous_dense": 0.9960561991619423,
+        "latency_reduction_vs_previous_dense_percent": -0.3959415986142023
+      },
+      "8": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.44815,
+        "p95_ms_per_forward": 0.7771799999999995,
+        "mean_ms_per_forward": 0.49225811999999997,
+        "characters_per_second_from_median": 17851.165904273123,
+        "speedup_vs_previous_dense": 1.0010041280821154,
+        "latency_reduction_vs_previous_dense_percent": 0.10031208203299391
+      },
+      "9": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4791,
+        "p95_ms_per_forward": 0.7656999999999988,
+        "mean_ms_per_forward": 0.52186396,
+        "characters_per_second_from_median": 18785.22229179712,
+        "speedup_vs_previous_dense": 1.0,
+        "latency_reduction_vs_previous_dense_percent": 0.0
+      },
+      "10": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.5135,
+        "p95_ms_per_forward": 0.8368899999999995,
+        "mean_ms_per_forward": 0.55999348,
+        "characters_per_second_from_median": 19474.196689386565,
+        "speedup_vs_previous_dense": 1.0007789678675756,
+        "latency_reduction_vs_previous_dense_percent": 0.07783615489396212
+      }
+    },
+    "conv2_pruned_student": {
+      "1": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.1718,
+        "p95_ms_per_forward": 0.3100649999999991,
+        "mean_ms_per_forward": 0.19360555999999998,
+        "characters_per_second_from_median": 5820.721769499418,
+        "speedup_vs_previous_dense": 1.0325960419091966,
+        "latency_reduction_vs_previous_dense_percent": 3.1567080045095786
+      },
+      "7": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.375,
+        "p95_ms_per_forward": 0.6499549999999992,
+        "mean_ms_per_forward": 0.41171872000000004,
+        "characters_per_second_from_median": 18666.666666666668,
+        "speedup_vs_previous_dense": 1.0776000000000001,
+        "latency_reduction_vs_previous_dense_percent": 7.2011878247958405
+      },
+      "8": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4143,
+        "p95_ms_per_forward": 0.75062,
+        "mean_ms_per_forward": 0.45851664000000003,
+        "characters_per_second_from_median": 19309.678976587016,
+        "speedup_vs_previous_dense": 1.0827902486121168,
+        "latency_reduction_vs_previous_dense_percent": 7.646009808292464
+      },
+      "9": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.443,
+        "p95_ms_per_forward": 0.6959899999999994,
+        "mean_ms_per_forward": 0.48015667999999995,
+        "characters_per_second_from_median": 20316.027088036117,
+        "speedup_vs_previous_dense": 1.081489841986456,
+        "latency_reduction_vs_previous_dense_percent": 7.534961385931959
+      },
+      "10": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.4716,
+        "p95_ms_per_forward": 0.7551349999999998,
+        "mean_ms_per_forward": 0.513506,
+        "characters_per_second_from_median": 21204.410517387616,
+        "speedup_vs_previous_dense": 1.0896946564885497,
+        "latency_reduction_vs_previous_dense_percent": 8.231173380035028
+      }
+    }
+  }
+}
