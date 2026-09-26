@@ -1,0 +1,46 @@
+{
+  "prepare": {
+    "source": "data\\OCR\\OCR\\images\\train(1)\\detection",
+    "source_images": 37297,
+    "accepted_images": 25048,
+    "skipped_images": 12249,
+    "skip_rate": 0.32841783521462853,
+    "character_crops": 200854,
+    "source_types": {
+      "two_row_motorcycle": 5536,
+      "one_row": 19086,
+      "two_row_car": 12228
+    },
+    "accepted_types": {
+      "one_row": 14494,
+      "two_row_motorcycle": 3449,
+      "two_row_car": 7105
+    },
+    "skip_reasons": {
+      "segmentation_or_count": 11802,
+      "bad_filename": 447
+    },
+    "condition_skip_rates": {
+      "blur": {
+        "images": 87,
+        "skipped": 36,
+        "skip_rate": 0.41379310344827586
+      },
+      "angled": {
+        "images": 94,
+        "skipped": 38,
+        "skip_rate": 0.40425531914893614
+      }
+    },
+    "blur_threshold_laplacian_variance": 80.0,
+    "angle_threshold_degrees": 8.0,
+    "perspective_correction": {
+      "attempted": 25048,
+      "applied": 14157
+    },
+    "row_classification": {
+      "1": 16214,
+      "2": 8834
+    }
+  }
+}

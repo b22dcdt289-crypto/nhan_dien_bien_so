@@ -411,3 +411,17 @@ measured CPU latency. The benchmark script is `benchmark_structured_speed.py`;
 summary and raw timing samples are in `artifacts/structured_speed_benchmark.json`
 and `artifacts/structured_speed_benchmark_raw.csv`. CPU timing is not a
 DE10-Lite hardware speed claim.
+
+## Matched 30-class channel-pruning experiment on `train(1)`
+
+The newer controlled experiment compares a dense 30-class LeNet-5 with a
+physically compact, channel-pruned model using the same prepared `train(1)`
+split and ten total dataset passes per branch. Dense accuracy was 92.24% per
+character and 83.75% exact-plate; structured accuracy was 91.61% and 81.16%.
+The compact model reduced MACs by 49.19%, and its batch-8 CPU median forward
+latency was 18.52% lower in this host-only measurement. See
+`artifacts/channel30_matched_structured_comparison.md` for the full method,
+formulas, breakdowns, caveats, and reproduction commands. Aggregate metrics,
+training history, confusion matrix, checkpoints, and raw timing samples are
+also saved under `artifacts/channel30_matched_*`. Source/prepared images and
+per-plate predictions are intentionally excluded from Git.

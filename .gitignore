@@ -61,6 +61,15 @@ artifacts/*
 !artifacts/structured_speed_benchmark.json
 !artifacts/structured_speed_benchmark_raw.csv
 !artifacts/structured_speed_benchmark_report.md
+!artifacts/channel30_matched_structured_prepare.json
+!artifacts/channel30_matched_structured_metrics.json
+!artifacts/channel30_matched_structured_history.csv
+!artifacts/channel30_matched_structured_confusion.csv
+!artifacts/lenet5_dense_channel30_matched_v1.pt
+!artifacts/lenet5_structured50_channel30_matched_v1.pt
+!artifacts/channel30_matched_speed_benchmark.json
+!artifacts/channel30_matched_speed_raw.csv
+!artifacts/channel30_matched_structured_comparison.md
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/
