@@ -276,6 +276,12 @@ def main():
     if not manifest_path.is_file():
         raise FileNotFoundError(f"Run prepare_one_row_1000.py first: {manifest_path}")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    preparation_metrics_path = args.data / "preparation_metrics.json"
+    preparation_metrics = (
+        json.loads(preparation_metrics_path.read_text(encoding="utf-8"))
+        if preparation_metrics_path.is_file()
+        else None
+    )
     train_records = [row for row in manifest if row["split"] == "train"]
     val_records = [row for row in manifest if row["split"] == "val"]
     test_records = [row for row in manifest if row["split"] == "test"]
@@ -362,11 +368,16 @@ def main():
         "class_count": len(CLASS_NAMES),
         "classes": CLASS_NAMES,
         "dataset": str(args.data),
-        "source": "train(1)/detection/one_row",
+        "source": (
+            "train(1) one-row car plates plus deduplicated VNLP mirror"
+            if preparation_metrics and preparation_metrics.get("dataset") == "front-facing, one-row Vietnamese car plates"
+            else "train(1)/detection/one_row"
+        ),
         "label_source": "source filename annotation except eight manually visually confirmed corrections; OCR audit never overwrote labels",
         "split_grouping": "unique exact plate label assigned to exactly one split",
         "architecture": "LeNet-5 dense, trained from random initialization; no pruning",
         "preprocessing": manifest[0]["enhancement"],
+        "preparation": preparation_metrics,
         "training": {
             "epochs_requested": args.epochs,
             "evaluation_only": args.evaluate_only,
@@ -386,6 +397,7 @@ def main():
         "interpretation": {
             "ground_truth_segmentation_scores": "Character crops are generated with annotated label length; character accuracy is conditional on segmentable test ROIs, while exact plate accuracy uses all test ROIs and counts segmentation failures as incorrect.",
             "runtime_no_known_count_scores": "Test plate identities and frames are sampled before checking segmentation; no expected count is passed, and skips count against accuracy. The input is still a ground-truth plate ROI, not a full frame.",
+            "population_scope": "One-row car plate ROIs passing the frontalness and legibility filters in the preparation metrics; results do not estimate performance on oblique/blurred rejected plates or full-frame detection.",
             "test_is_identity_disjoint": True,
             "uncertainty_interval": "Wilson 95% interval for binary character and exact-plate rates.",
         },

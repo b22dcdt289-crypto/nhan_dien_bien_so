@@ -258,6 +258,60 @@ Run a cropped plate ROI through the dense model:
 .venv\Scripts\python.exe recognize_independent.py data\one_row_1000_curated_v4\plates\test\test_0003.png --plate-crop --model artifacts/lenet5_dense_one_row_1000.pt
 ```
 
+## 1,000 filtered frontal one-row car plates (30-class dense LeNet-5)
+
+`prepare_frontal_car_1000.py` builds a new, separate dataset from the usable
+one-row sources in `train(1)` and the VNLP mirror. The two folders contain the
+same 19,086 images (verified by filename/size inventory and byte-comparing 24
+samples), so the mirror is deduplicated rather than counted twice. The script
+keeps the source images untouched, applies explicit frontalness/readability
+filters, and writes exactly 1,000 train, 300 validation, and 500 identity-
+disjoint test plates. The training subset is balanced by series letter where
+available; validation and test remain natural random samples of the qualified
+pool.
+
+Of 19,086 unique source images, 11,897 passed the preparation filters. One
+best-quality crop is retained per plate identity. The legacy OCR crop source
+(`data/OCR/OCR/images/{train,val}`) was not mixed in: a visual audit found
+character-box labels inconsistent with visible plate text, so those labels
+need a full audit before they can safely be used. Rejected and unselected
+source files are not deleted.
+
+The dense 30-class LeNet-5 was trained from scratch for 40 epochs without
+pruning; best validation character accuracy was 98.77% at epoch 36. On the
+held-out 500 *filtered, readable, one-row plate crops*, it correctly classified
+3,858/3,940 characters (97.92%; Wilson 95% CI 97.42–98.32%) and read 455/500
+complete plate strings exactly (91.00%; Wilson 95% CI 88.17–93.21%). The
+standalone ROI path, which has to infer the character count, attempted all 500
+and got 452/500 exact (90.40%). This is not full-frame camera accuracy and
+does not estimate performance on the rejected blurry, oblique, or otherwise
+unreadable images.
+
+The test split has sparse support for uncommon series letters: for example,
+`F`, `K`, `S`, `T`, `V`, `X`, and `Y` have only 2 examples each, `P` has 1,
+and `G`, `U`, and `Z` have no test examples. Scores for these classes are not
+reliable estimates of real-world class accuracy; collect more examples before
+claiming balanced performance across all 30 symbols. The full per-class,
+per-position, per-length, confidence-interval, and confusion-matrix results
+are in the aggregate metrics files below.
+
+The model has 63,406 parameters and uses approximately 418,200 MAC per
+character (about 3,345,600 MAC for an 8-character plate). One-row versus
+two-row layout does not multiply the OCR MACs for a fixed character count;
+layout handling is separate from the per-character classifier. We did not
+apply pruning in this run.
+
+Rebuild and retrain from the local source dataset:
+
+```powershell
+.venv\Scripts\python.exe prepare_frontal_car_1000.py
+.venv\Scripts\python.exe train_one_row_1000.py --data data/one_row_frontal_1000_v1 --epochs 40 --output artifacts/lenet5_dense_front_one_row_1000_30class.pt --metrics artifacts/front_one_row_1000_30class_metrics.json --test-csv artifacts/front_one_row_1000_30class_test_predictions.csv --history-csv artifacts/front_one_row_1000_30class_training_history.csv
+```
+
+The checkpoint, aggregate metrics, confusion matrix, and training history are
+versioned. The per-plate prediction CSV and prepared images remain local and
+are not uploaded because they contain plate identifiers and dataset images.
+
 ## Online labeled-image smoke test
 
 `eval_online_labeled.py` evaluates public plate crops whose ground-truth text
