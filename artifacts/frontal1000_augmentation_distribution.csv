@@ -1,0 +1,9 @@
+﻿category,observed_count,observed_fraction
+geometry:affine,19128,0.11955
+geometry:none,88155,0.55096875
+geometry:perspective,12588,0.078675
+geometry:rotation,40129,0.25080625
+photometric:blur,15952,0.0997
+photometric:brightness_contrast,36816,0.2301
+photometric:noise,35328,0.2208
+photometric:none,71904,0.4494

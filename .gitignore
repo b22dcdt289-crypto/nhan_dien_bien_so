@@ -79,6 +79,15 @@ artifacts/*
 !artifacts/channel30_cost_hard_conv2_speed.json
 !artifacts/channel30_cost_hard_conv2_speed_raw.csv
 !artifacts/channel30_conv2_student_confusion.csv
+!artifacts/lenet5_conv2_frontal1000_cost_v1.pt
+!artifacts/frontal1000_conv2_cost_metrics.json
+!artifacts/frontal1000_conv2_cost_report.md
+!artifacts/frontal1000_confusion_cost_M.csv
+!artifacts/frontal1000_confusion_submatrix.csv
+!artifacts/frontal1000_class_distribution.csv
+!artifacts/frontal1000_augmentation_distribution.csv
+!artifacts/frontal1000_validation_previous_confusion.csv
+!artifacts/frontal1000_validation_finetuned_confusion.csv
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/

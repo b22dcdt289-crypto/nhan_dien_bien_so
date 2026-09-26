@@ -134,11 +134,13 @@ def candidate_from_image(path: Path, args, rejected: Counter):
     segmented = segment_characters(rectified, expected_count=len(text), enhancement=args.enhancement)
     if segmented is None:
         rejected["character_segmentation_failed_or_wrong_count"] += 1
-        return None
-    crops, row_count, character_count = segmented
-    if row_count != 1 or character_count != len(text):
-        rejected["not_one_row_or_wrong_character_count"] += 1
-        return None
+        crops, segmentation_ok = [], False
+    else:
+        crops, row_count, character_count = segmented
+        segmentation_ok = row_count == 1 and character_count == len(text)
+        if not segmentation_ok:
+            rejected["not_one_row_or_wrong_character_count"] += 1
+            crops = []
 
     # Selection score only ranks repeated images of the same plate identity.
     # Every image must still pass the same front-view/readability gates above.
@@ -155,6 +157,7 @@ def candidate_from_image(path: Path, args, rejected: Counter):
         "plate": plate,
         "rectified": rectified,
         "crops": crops,
+        "segmentation_ok": segmentation_ok,
         "angle": float(angle),
         "blur": float(blur_score),
         "contrast": contrast,
@@ -162,6 +165,37 @@ def candidate_from_image(path: Path, args, rejected: Counter):
         "perspective_applied": bool(perspective_applied),
         "score": float(score),
     }
+
+
+def save_frontal_preview(output: Path, records: list[dict], limit: int = 50):
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    samples = [record for record in records if record["split"] == "train"][:limit]
+    columns, tile_width, tile_height = 5, 250, 94
+    rows = (len(samples) + columns - 1) // columns
+    sheet = np.full((max(1, rows) * tile_height, columns * tile_width, 3), 242, dtype=np.uint8)
+    for index, record in enumerate(samples):
+        image = cv2.imread(str(output / record["rectified_crop"]))
+        if image is None:
+            continue
+        h, w = image.shape[:2]
+        scale = min((tile_width - 12) / max(1, w), 66 / max(1, h))
+        resized = cv2.resize(image, (max(1, round(w * scale)), max(1, round(h * scale))))
+        x = (index % columns) * tile_width + (tile_width - resized.shape[1]) // 2
+        y = (index // columns) * tile_height + 2
+        sheet[y : y + resized.shape[0], x : x + resized.shape[1]] = resized
+        label_y = (index // columns) * tile_height + tile_height - 13
+        cv2.putText(
+            sheet,
+            f"{record['sample_id']}  {record['text']}",
+            ((index % columns) * tile_width + 6, label_y),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.43,
+            (20, 35, 25),
+            1,
+            cv2.LINE_AA,
+        )
+    cv2.imwrite(str(review_dir / "frontal_train_examples.jpg"), sheet, [cv2.IMWRITE_JPEG_QUALITY, 94])
 
 
 def main():
@@ -173,7 +207,14 @@ def main():
     parser.add_argument("--train-count", type=int, default=1000)
     parser.add_argument("--val-count", type=int, default=300)
     parser.add_argument("--test-count", type=int, default=500)
+    parser.add_argument("--label-length", type=int, default=8, help="Require this many visible alphanumeric characters in train/validation/test.")
     parser.add_argument("--seed", type=int, default=20260927)
+    parser.add_argument(
+        "--test-exclude-manifest",
+        type=Path,
+        default=None,
+        help="Choose test identities only from plates absent from this earlier manifest (prevents reusing prior-model identities).",
+    )
     parser.add_argument("--min-width", type=int, default=120)
     parser.add_argument("--min-height", type=int, default=28)
     parser.add_argument("--min-aspect", type=float, default=3.0)
@@ -183,6 +224,15 @@ def main():
     parser.add_argument("--min-contrast", type=float, default=25.0)
     parser.add_argument("--enhancement", choices=("clahe", "clahe_sharp"), default="clahe_sharp")
     args = parser.parse_args()
+
+    prior_identities = set()
+    if args.test_exclude_manifest is not None:
+        if not args.test_exclude_manifest.is_file():
+            raise FileNotFoundError(args.test_exclude_manifest)
+        prior_identities = {
+            str(record["text"]).upper()
+            for record in json.loads(args.test_exclude_manifest.read_text(encoding="utf-8"))
+        }
 
     if args.output.exists() and any(args.output.iterdir()):
         raise FileExistsError(f"Output is not empty; use another path: {args.output}")
@@ -205,27 +255,43 @@ def main():
         identity: max(candidates, key=lambda item: item["score"])
         for identity, candidates in by_identity.items()
     }
+    trainable_by_identity = {
+        identity: max((item for item in candidates if item["segmentation_ok"]), key=lambda item: item["score"])
+        for identity, candidates in by_identity.items()
+        if len(identity) == args.label_length and any(item["segmentation_ok"] for item in candidates)
+    }
     required = args.train_count + args.val_count + args.test_count
-    if len(best_by_identity) < required:
+    if len(trainable_by_identity) < args.train_count + args.val_count:
         raise RuntimeError(
-            f"Only {len(best_by_identity)} unique readable front-view plates passed the filters; "
-            f"{required} are required. Rejected counts: {dict(rejected)}"
+            f"Only {len(trainable_by_identity)} unique segmentable plates passed the filters; "
+            f"{args.train_count + args.val_count} are required for train/validation. Rejected counts: {dict(rejected)}"
         )
 
     rng = random.Random(args.seed)
     identities = sorted(best_by_identity)
     rng.shuffle(identities)
-    heldout_count = args.val_count + args.test_count
-    split_ids = {
-        "val": identities[: args.val_count],
-        "test": identities[args.val_count : heldout_count],
-    }
+    unseen_test_candidates = [
+        identity for identity in identities
+        if identity not in prior_identities and len(identity) == args.label_length
+    ]
+    if len(unseen_test_candidates) < args.test_count:
+        raise RuntimeError(
+            f"Only {len(unseen_test_candidates)} eligible unseen 8-character identities passed image-quality gates; "
+            f"{args.test_count} are required. Relax quality filters or reduce test-count."
+        )
+    test_ids = unseen_test_candidates[: args.test_count]
+    test_id_set = set(test_ids)
+    remaining_ids = [identity for identity in trainable_by_identity if identity not in test_id_set]
+    rng.shuffle(remaining_ids)
+    val_ids = remaining_ids[: args.val_count]
+    train_candidates = remaining_ids[args.val_count :]
+    split_ids = {"val": val_ids, "test": test_ids}
 
     # Keep the held-out pool random and natural. Balance only training plates
     # by the series letter at position 3 so rare series are not accidentally
     # absent from the 1,000 examples used to fit the classifier.
     train_buckets: dict[str, list[str]] = defaultdict(list)
-    for identity in identities[heldout_count:]:
+    for identity in train_candidates:
         series = identity[2] if len(identity) > 2 and identity[2].isalpha() else "_"
         train_buckets[series].append(identity)
     for bucket in train_buckets.values():
@@ -261,7 +327,7 @@ def main():
     class_counts = {split: Counter() for split in split_ids}
     for split, split_identities in split_ids.items():
         for index, identity in enumerate(split_identities, 1):
-            item = best_by_identity[identity]
+            item = best_by_identity[identity] if split == "test" else trainable_by_identity[identity]
             sample_id = f"{split}_{index:04d}"
             plate_rel = Path("plates") / split / f"{sample_id}.png"
             rectified_rel = Path("rectified") / split / f"{sample_id}.png"
@@ -283,15 +349,16 @@ def main():
                 "split": split,
                 "text": identity,
                 "source_filename_text": item["source_text"],
-                "label_corrected_after_visual_review": item["source_text"] != identity,
+                "label_corrected_by_known_mapping": item["source_text"] != identity,
+                "label_visually_reviewed": False,
                 "source": source_name,
                 "plate_crop": plate_rel.as_posix(),
                 "rectified_crop": rectified_rel.as_posix(),
                 "crop_files": crop_files,
                 "char_count": len(identity),
                 "row_count": 1,
-                "ground_truth_segmentation_ok": True,
-                "ground_truth_segmentation_status": "ok",
+                "ground_truth_segmentation_ok": item["segmentation_ok"],
+                "ground_truth_segmentation_status": "ok" if item["segmentation_ok"] else "unsegmentable_by_current_pipeline",
                 "perspective_corrected": item["perspective_applied"],
                 "angle_deg": round(item["angle"], 3),
                 "blur_score": round(item["blur"], 3),
@@ -312,7 +379,15 @@ def main():
         "scanned_unique_images": len(paths),
         "eligible_frames_after_quality_filters": sum(map(len, by_identity.values())),
         "unique_eligible_plate_identities": len(best_by_identity),
+        "unique_trainable_plate_identities": len(trainable_by_identity),
+        "eligible_identities_absent_from_prior_manifest": len(unseen_test_candidates),
+        "prior_identity_exclusion_manifest": args.test_exclude_manifest.as_posix() if args.test_exclude_manifest else None,
+        "test_identities_absent_from_prior_model_dataset": not bool(set(split_ids["test"]) & prior_identities),
         "selected_plate_counts": {split: len(ids) for split, ids in split_ids.items()},
+        "selected_segmentable_plate_counts": {
+            split: sum(best_by_identity[identity]["segmentation_ok"] if split == "test" else trainable_by_identity[identity]["segmentation_ok"] for identity in ids)
+            for split, ids in split_ids.items()
+        },
         "selected_characters_per_split": {split: dict(counts) for split, counts in class_counts.items()},
         "rejected_frames_by_reason": dict(rejected),
         "filters": {
@@ -321,9 +396,10 @@ def main():
             "laplacian_blur_minimum": args.min_blur,
             "grayscale_contrast_std_minimum": args.min_contrast,
             "minimum_plate_crop_size_px": [args.min_width, args.min_height],
-            "segmentation_must_match_filename_length": True,
+            "train_and_validation_segmentation_must_match_filename_length": True,
+            "test_selection_requires_image_quality_and_8_char_label_but_not_character_segmentation": True,
             "row_count_must_equal": 1,
-            "allowed_character_count": [7, 8, 9],
+            "allowed_character_count_in_selected_splits": [args.label_length],
         },
         "selection_policy": "one best-quality frame per plate identity; natural random validation/test; training subset is round-robin balanced by the series letter at position 3",
         "unreviewed_legacy_crop_source_excluded": "data/OCR/OCR/images/{train,val} CarLongPlate images were not mixed because inspected character-box labels do not match visible plate text; use only after a full label audit",
@@ -334,6 +410,7 @@ def main():
     (args.output / "preparation_metrics.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    save_frontal_preview(args.output, records)
     print(json.dumps(summary, ensure_ascii=False, indent=2), flush=True)
 
 
