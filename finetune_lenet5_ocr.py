@@ -7,7 +7,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from train_lenet5 import CLASS_NAMES, CharacterCropDataset, LeNet5, run_epoch
+from train_lenet5 import CLASS_NAMES, CharacterCropDataset, LeNet5, require_compatible_classes, run_epoch
 
 
 def main():
@@ -26,6 +26,7 @@ def main():
     val_loader = DataLoader(val, batch_size=256, shuffle=False, num_workers=0)
     model = LeNet5(len(CLASS_NAMES)).to(device)
     checkpoint = torch.load(args.init, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.init)
     model.load_state_dict(checkpoint["model"])
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
     loss_fn = nn.CrossEntropyLoss()

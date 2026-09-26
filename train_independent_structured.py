@@ -15,7 +15,7 @@ from PIL import Image, ImageOps
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
-from train_lenet5 import CLASS_NAMES, LeNet5, run_epoch
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes, run_epoch
 
 
 SOURCE_ROOT = Path("data/OCR/OCR/images/train(1)/detection")
@@ -399,7 +399,7 @@ class LeNet5Structured50(nn.Module):
 
     channels = (4, 10, 100, 70)
 
-    def __init__(self, num_classes=36):
+    def __init__(self, num_classes=len(CLASS_NAMES)):
         super().__init__()
         c1, c2, h1, h2 = self.channels
         self.features = nn.Sequential(
@@ -418,7 +418,7 @@ class LeNet5Structured50(nn.Module):
     @classmethod
     def macs(cls):
         c1, c2, h1, h2 = cls.channels
-        return 1 * c1 * 25 * 28 * 28 + c1 * c2 * 25 * 10 * 10 + c2 * 25 * h1 + h1 * h2 + h2 * 36
+        return 1 * c1 * 25 * 28 * 28 + c1 * c2 * 25 * 10 * 10 + c2 * 25 * h1 + h1 * h2 + h2 * len(CLASS_NAMES)
 
 
 def top_indices(weight: torch.Tensor, count: int, dim: int = 0):
@@ -504,6 +504,7 @@ def train_models(args):
     dense = LeNet5(len(CLASS_NAMES)).to(device)
     if args.dense_init and args.dense_init.exists():
         checkpoint = torch.load(args.dense_init, map_location=device, weights_only=False)
+        require_compatible_classes(checkpoint, args.dense_init)
         dense.load_state_dict(checkpoint["model"])
         print(f"dense_init={args.dense_init}", flush=True)
     dense_opt = torch.optim.AdamW(dense.parameters(), lr=args.dense_lr, weight_decay=1e-5)
@@ -537,7 +538,7 @@ def train_models(args):
     prepare_metrics = {}
     if args.metrics.exists():
         prepare_metrics = json.loads(args.metrics.read_text(encoding="utf-8")).get("prepare", {})
-    dense_macs = 418704
+    dense_macs = 418200
     metrics = {
         "source": str(args.source),
         "data_root": str(args.data),
@@ -560,6 +561,7 @@ def train_models(args):
 def evaluate_checkpoint(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(args.eval_checkpoint, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.eval_checkpoint)
     model = LeNet5Structured50(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     end_to_end = plate_metrics(model, device, args.data)
@@ -567,7 +569,7 @@ def evaluate_checkpoint(args):
     dense_accuracy = None
     if args.dense_output.exists():
         dense_accuracy = torch.load(args.dense_output, map_location="cpu", weights_only=False).get("val_acc")
-    dense_macs = 418704
+    dense_macs = 418200
     metrics = {
         "source": str(args.source), "data_root": str(args.data),
         "dense_validation_character_accuracy": dense_accuracy,

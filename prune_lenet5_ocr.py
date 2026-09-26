@@ -9,7 +9,7 @@ from torch import nn
 from torch.nn.utils import prune
 from torch.utils.data import DataLoader
 
-from train_lenet5 import CLASS_NAMES, CharacterCropDataset, LeNet5, run_epoch
+from train_lenet5 import CLASS_NAMES, CharacterCropDataset, LeNet5, require_compatible_classes, run_epoch
 
 
 def main():
@@ -28,6 +28,7 @@ def main():
     val_loader = DataLoader(val, batch_size=256, shuffle=False, num_workers=0)
     model = LeNet5(len(CLASS_NAMES)).to(device)
     checkpoint = torch.load(args.init, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.init)
     model.load_state_dict(checkpoint['model'])
     params = [(m, 'weight') for m in model.modules() if isinstance(m, (nn.Conv2d, nn.Linear))]
     prune.global_unstructured(params, pruning_method=prune.L1Unstructured, amount=args.amount)

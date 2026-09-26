@@ -8,7 +8,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from structured_prune_lenet5 import LeNet5Structured
-from train_lenet5 import CLASS_NAMES, run_epoch
+from train_lenet5 import CLASS_NAMES, require_compatible_classes, run_epoch
 from train_lenet5_folder import LazyFolderChars
 
 
@@ -31,6 +31,7 @@ def main():
     val_loader = DataLoader(val, batch_size=args.batch_size, shuffle=False, num_workers=0)
     model = LeNet5Structured(len(CLASS_NAMES)).to(device)
     ckpt = torch.load(args.init, map_location=device, weights_only=False)
+    require_compatible_classes(ckpt, args.init)
     model.load_state_dict(ckpt['model'])
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-5)
     loss_fn = nn.CrossEntropyLoss()

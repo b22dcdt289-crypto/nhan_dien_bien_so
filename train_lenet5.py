@@ -12,7 +12,22 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 
-CLASS_NAMES = list("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+# Standard domestic plate serial letters from Circular 79/2024/TT-BCA:
+# A-H, K-N, P, S-V, X-Z. Together with digits this is a 30-class OCR alphabet.
+CLASS_NAMES = list("0123456789ABCDEFGHKLMNPSTUVXYZ")
+SOURCE_CLASS_NAMES = list("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+CLASS_TO_INDEX = {character: index for index, character in enumerate(CLASS_NAMES)}
+
+
+def require_compatible_classes(checkpoint: dict, checkpoint_path: Path | str = "checkpoint") -> None:
+    stored_classes = checkpoint.get("classes")
+    if stored_classes != CLASS_NAMES:
+        stored_count = len(stored_classes) if stored_classes is not None else "unknown"
+        raise ValueError(
+            f"{checkpoint_path} has {stored_count} classes and a different class order; "
+            f"this model requires {len(CLASS_NAMES)} classes ({''.join(CLASS_NAMES)}). "
+            "Retrain or explicitly migrate the checkpoint before using it."
+        )
 
 
 class CharacterCropDataset(Dataset):
@@ -31,9 +46,16 @@ class CharacterCropDataset(Dataset):
                 parts = line.split()
                 if len(parts) != 5:
                     continue
-                cls = int(float(parts[0]))
-                if not 0 <= cls < len(CLASS_NAMES):
+                source_cls = int(float(parts[0]))
+                if not 0 <= source_cls < len(SOURCE_CLASS_NAMES):
                     continue
+                character = SOURCE_CLASS_NAMES[source_cls]
+                # Source YOLO labels use the old digit+ A-Z (36-class) ordering.
+                # Drop symbols outside the current plate vocabulary and remap
+                # every retained symbol to its new contiguous class index.
+                if character not in CLASS_TO_INDEX:
+                    continue
+                cls = CLASS_TO_INDEX[character]
                 box = tuple(float(x) for x in parts[1:5])
                 self.items.append((image_path, cls, box))
 
@@ -66,7 +88,7 @@ class CharacterCropDataset(Dataset):
 
 
 class LeNet5(nn.Module):
-    def __init__(self, num_classes: int = 36):
+    def __init__(self, num_classes: int = len(CLASS_NAMES)):
         super().__init__()
         self.features = nn.Sequential(
             nn.Conv2d(1, 6, kernel_size=5),

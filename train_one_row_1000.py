@@ -15,10 +15,10 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from train_independent_structured import FolderChars, perspective_correct, segment_characters
-from train_lenet5 import CLASS_NAMES, LeNet5, run_epoch
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes, run_epoch
 
 
-MACS_PER_CHARACTER = 418704
+MACS_PER_CHARACTER = 418200
 
 
 def wilson_interval(successes: int, total: int, z: float = 1.959963984540054):
@@ -59,6 +59,7 @@ def predict_crop_files(model, device, root: Path, crop_files: list[str]):
 
 def load_checkpoint(path: Path, device: torch.device):
     checkpoint = torch.load(path, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, path)
     model = LeNet5(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     model.eval()
@@ -358,6 +359,8 @@ def main():
     test_summary, test_rows, confusion = evaluate_split(best_model, device, args.data, manifest, "test")
     args.metrics.parent.mkdir(parents=True, exist_ok=True)
     metrics = {
+        "class_count": len(CLASS_NAMES),
+        "classes": CLASS_NAMES,
         "dataset": str(args.data),
         "source": "train(1)/detection/one_row",
         "label_source": "source filename annotation except eight manually visually confirmed corrections; OCR audit never overwrote labels",
@@ -404,6 +407,8 @@ def main():
 
     summary = {
         "model": metrics["architecture"],
+        "class_count": len(CLASS_NAMES),
+        "classes": "".join(CLASS_NAMES),
         "training_plates": len(train_records),
         "training_character_crops": len(train_set),
         "validation_plates": len(val_records),

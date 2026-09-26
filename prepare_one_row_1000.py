@@ -18,7 +18,7 @@ from train_independent_structured import (
     perspective_correct,
     segment_characters,
 )
-from train_lenet5 import CLASS_NAMES, LeNet5
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes
 
 
 DEFAULT_SOURCE = Path("data/OCR/OCR/images/train(1)/detection/one_row")
@@ -40,6 +40,10 @@ def load_audit_model(path: Path, device: torch.device):
     if not path.is_file():
         return None
     checkpoint = torch.load(path, map_location=device, weights_only=False)
+    try:
+        require_compatible_classes(checkpoint, path)
+    except ValueError:
+        return None
     model = LeNet5(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     model.eval()

@@ -7,7 +7,7 @@ import cv2
 import torch
 
 from recognize_plate import segment_characters
-from train_lenet5 import CLASS_NAMES, LeNet5
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes
 from structured_prune_lenet5 import LeNet5Structured
 
 
@@ -28,6 +28,7 @@ def main():
         raise RuntimeError("Detector không tìm thấy biển số trong ảnh.")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(args.model, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.model)
     model_cls = LeNet5Structured if checkpoint.get("arch") == "LeNet5Structured" else LeNet5
     model = model_cls(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])

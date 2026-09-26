@@ -2,6 +2,37 @@
 
 This project trains a LeNet-5 character classifier from YOLO character boxes.
 
+## Current character alphabet (30 classes)
+
+For standard domestic Vietnamese plates, the OCR vocabulary is digits `0–9`
+and letters `A–H, K–N, P, S–V, X–Z` (20 letters, 30 classes total), matching
+Circular 79/2024/TT-BCA, Article 37(5)(c–đ). Special-purpose and foreign plate
+serials may contain other letters and are outside this 30-class model's scope.
+The source YOLO annotations retain their legacy `0–9, A–Z` class IDs; the
+dataset loader now filters unsupported symbols and remaps retained IDs.
+
+The existing OCR checkpoints and accuracy/MAC figures below were produced
+with a 36-class output layer; they are historical and cannot be loaded as
+30-class models. For the current 30-class one-row experiment, use:
+
+```powershell
+.venv\Scripts\python.exe train_one_row_1000.py --data data/one_row_1000_curated_v4 --output artifacts/lenet5_dense_one_row_1000_30class.pt --metrics artifacts/one_row_1000_30class_metrics.json --test-csv artifacts/one_row_1000_30class_test_predictions.csv --history-csv artifacts/one_row_1000_30class_training_history.csv
+```
+
+This 20-epoch, unpruned 30-class run reached 96.55% validation character
+accuracy and 97.85% test character accuracy on correctly segmented test crops.
+The test contains 500 plates; segmentation coverage was 77.4%, and exact-plate
+accuracy counting every test plate (including segmentation failures) was 69.0%.
+The no-known-character-count runtime path attempted 88.8% of test ROIs and
+achieved 68.4% exact accuracy across all 500. These are one-row ROI results,
+not full-frame camera accuracy. Rare letters have very few test examples, so
+the weighted character score does not establish equal accuracy for all 30
+classes; per-letter supports and scores are in the metrics JSON.
+
+With the 30-output dense model, OCR uses 418,200 MAC per character. For an
+8-character plate that is 3,345,600 MAC whether the characters are printed on
+one row or two; row splitting and ordering do not add another OCR pass.
+
 ## Run
 
 ```powershell

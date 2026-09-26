@@ -8,7 +8,7 @@ import numpy as np
 import torch
 
 from train_independent_structured import LeNet5Structured50, perspective_correct, segment_characters
-from train_lenet5 import CLASS_NAMES, LeNet5
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes
 
 
 def find_plate_candidate(image: np.ndarray, return_box: bool = False):
@@ -63,6 +63,7 @@ def main():
         plate, applied, angle = found
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(args.model, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.model)
     enhancement = args.enhancement or checkpoint.get("enhancement", "none")
     segmented = segment_characters(plate, expected_count=None, enhancement=enhancement)
     if segmented is None:
@@ -75,7 +76,7 @@ def main():
     architecture = checkpoint.get("arch", "LeNet5Structured50")
     if architecture in {"LeNet5", "LeNet5_dense_no_pruning"}:
         model = LeNet5(len(CLASS_NAMES)).to(device)
-        macs_per_character = 418704
+        macs_per_character = 418200
         model_name = "LeNet5_dense_no_pruning"
     else:
         model = LeNet5Structured50(len(CLASS_NAMES)).to(device)

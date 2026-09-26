@@ -45,6 +45,10 @@ artifacts/*
 !artifacts/one_row_1000_metrics_confusion_matrix.csv
 !artifacts/one_row_1000_training_history.csv
 !artifacts/one_row_1000_report.md
+!artifacts/lenet5_dense_one_row_1000_30class.pt
+!artifacts/one_row_1000_30class_metrics.json
+!artifacts/one_row_1000_30class_metrics_confusion_matrix.csv
+!artifacts/one_row_1000_30class_training_history.csv
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/

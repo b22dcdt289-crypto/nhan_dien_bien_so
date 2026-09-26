@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import torch
 
-from train_lenet5 import CLASS_NAMES, LeNet5
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes
 
 
 def order_points(points):
@@ -108,6 +108,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = LeNet5(len(CLASS_NAMES)).to(device)
     checkpoint = torch.load(args.model, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.model)
     model.load_state_dict(checkpoint["model"])
     model.eval()
     batch = []

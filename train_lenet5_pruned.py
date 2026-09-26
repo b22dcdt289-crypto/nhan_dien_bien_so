@@ -9,7 +9,7 @@ from torch import nn
 from torch.nn.utils import prune
 from torch.utils.data import DataLoader
 
-from train_lenet5 import CLASS_NAMES, LeNet5, run_epoch
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes, run_epoch
 from train_lenet5_folder import FolderChars
 
 
@@ -54,6 +54,7 @@ def main():
     model = LeNet5(len(CLASS_NAMES)).to(device)
     if args.init.exists():
         checkpoint = torch.load(args.init, map_location=device, weights_only=False)
+        require_compatible_classes(checkpoint, args.init)
         model.load_state_dict(checkpoint["model"])
         print(f"loaded={args.init}", flush=True)
     apply_global_pruning(model, args.prune)

@@ -12,9 +12,9 @@ from train_lenet5_folder import FolderChars
 
 
 class LeNet5Lite(nn.Module):
-    """Hardware-oriented LeNet: fewer channels/FC units, 36 character classes."""
+    """Hardware-oriented LeNet: fewer channels/FC units, 30 plate characters."""
 
-    def __init__(self, num_classes: int = 36):
+    def __init__(self, num_classes: int = len(CLASS_NAMES)):
         super().__init__()
         self.features = nn.Sequential(
             nn.Conv2d(1, 4, 5), nn.ReLU(), nn.AvgPool2d(2),

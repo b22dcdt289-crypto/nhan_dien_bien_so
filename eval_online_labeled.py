@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 from train_independent_structured import LeNet5Structured50, perspective_correct, segment_characters
-from train_lenet5 import CLASS_NAMES
+from train_lenet5 import CLASS_NAMES, require_compatible_classes
 
 
 LABEL_RE = re.compile(r"^([A-Z0-9]+)_")
@@ -19,7 +19,10 @@ LABEL_RE = re.compile(r"^([A-Z0-9]+)_")
 
 def plate_label(path: Path) -> str | None:
     match = LABEL_RE.match(path.stem.upper())
-    return match.group(1) if match else None
+    if not match:
+        return None
+    label = match.group(1)
+    return label if all(character in CLASS_NAMES for character in label) else None
 
 
 def position_accuracy(expected: str, predicted: str) -> float:
@@ -42,6 +45,7 @@ def main() -> None:
         files = files[: args.limit]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     checkpoint = torch.load(args.model, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, args.model)
     model = LeNet5Structured50(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     model.eval()
@@ -51,7 +55,7 @@ def main() -> None:
     for path in files:
         expected = plate_label(path)
         if expected is None:
-            reasons["missing_filename_label"] += 1
+            reasons["missing_or_unsupported_filename_label"] += 1
             continue
         image = cv2.imread(str(path))
         result: dict[str, object] = {"file": path.name, "expected": expected}

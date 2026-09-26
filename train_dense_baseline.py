@@ -14,14 +14,15 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from train_independent_structured import FolderChars, LeNet5, LeNet5Structured50, run_epoch
-from train_lenet5 import CLASS_NAMES
+from train_lenet5 import CLASS_NAMES, require_compatible_classes
 
 
-DENSE_MACS_PER_CHARACTER = 418704
+DENSE_MACS_PER_CHARACTER = 418200
 
 
 def load_model(path: Path, device: torch.device, architecture: str = "dense") -> nn.Module:
     checkpoint = torch.load(path, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, path)
     model_type = LeNet5 if architecture == "dense" else LeNet5Structured50
     model = model_type(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])

@@ -6,11 +6,12 @@ import argparse
 from pathlib import Path
 
 import cv2
+from train_lenet5 import CLASS_NAMES
 
 
 ROOT = Path("data/VNLP/detection")
 OUT = Path("data/VNLP_chars_corrected")
-CHARS = set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+CHARS = set(CLASS_NAMES)
 
 
 def parse_name(path: Path):

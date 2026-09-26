@@ -7,13 +7,13 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from train_lenet5 import CLASS_NAMES, CharacterCropDataset, LeNet5, run_epoch
+from train_lenet5 import CLASS_NAMES, CharacterCropDataset, LeNet5, require_compatible_classes, run_epoch
 
 
 class LeNet5Structured(nn.Module):
     """Physically smaller LeNet-5: channel/neuron pruning is baked into shapes."""
 
-    def __init__(self, num_classes=36, c1=4, c2=12, h1=90, h2=63):
+    def __init__(self, num_classes=len(CLASS_NAMES), c1=4, c2=12, h1=90, h2=63):
         super().__init__()
         self.channels = (c1, c2, h1, h2)
         self.features = nn.Sequential(
@@ -31,7 +31,7 @@ class LeNet5Structured(nn.Module):
 
     def macs(self):
         c1, c2, h1, h2 = self.channels
-        return 1 * c1 * 25 * 28 * 28 + c1 * c2 * 25 * 10 * 10 + c2 * 25 * h1 + h1 * h2 + h2 * 36
+        return 1 * c1 * 25 * 28 * 28 + c1 * c2 * 25 * 10 * 10 + c2 * 25 * h1 + h1 * h2 + h2 * self.classifier[-1].out_features
 
 
 def top_indices(weight, count, dim=0):
@@ -76,6 +76,7 @@ def main():
     train_loader = DataLoader(train, batch_size=256, shuffle=True, num_workers=0)
     val_loader = DataLoader(val, batch_size=256, shuffle=False, num_workers=0)
     ckpt = torch.load(args.init, map_location=device, weights_only=False)
+    require_compatible_classes(ckpt, args.init)
     model = LeNet5Structured(len(CLASS_NAMES)).to(device)
     if ckpt.get('arch') == 'LeNet5Structured':
         model.load_state_dict(ckpt['model'])

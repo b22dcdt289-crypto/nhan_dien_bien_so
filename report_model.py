@@ -4,7 +4,7 @@ import argparse
 import torch
 
 from structured_prune_lenet5 import LeNet5Structured
-from train_lenet5 import LeNet5
+from train_lenet5 import CLASS_NAMES, LeNet5
 
 
 def main():
@@ -12,7 +12,9 @@ def main():
     parser.add_argument('--checkpoint', type=Path, default=Path('artifacts/lenet5_ocr_structured_pruned25_final.pt'))
     args = parser.parse_args()
     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
-    model = LeNet5Structured(36) if checkpoint.get('arch') == 'LeNet5Structured' else LeNet5(36)
+    class_names = checkpoint.get('classes', CLASS_NAMES)
+    num_classes = len(class_names)
+    model = LeNet5Structured(num_classes) if checkpoint.get('arch') == 'LeNet5Structured' else LeNet5(num_classes)
     model.load_state_dict(checkpoint['model'])
     params = sum(parameter.numel() for parameter in model.parameters())
     int8_mib = params / (1024 * 1024)
@@ -22,7 +24,7 @@ def main():
     else:
         mac_layers = [('conv1', 117600, model.features[0]), ('conv2', 240000, model.features[3]),
                       ('fc1', 48000, model.classifier[0]), ('fc2', 10080, model.classifier[2]),
-                      ('fc3', 3024, model.classifier[4])]
+                      ('fc3', 84 * num_classes, model.classifier[4])]
         dense_mac_char = sum(mac for _, mac, _ in mac_layers)
     effective_mac_char = dense_mac_char
     if mac_layers:
@@ -41,7 +43,8 @@ def main():
     print(f'MAC bien 2 hang (8 ky tu): {effective_mac_char * 8:,.0f} (~{effective_mac_char * 8 / 1e6:.2f} trieu)')
     if weight_total:
         print(f'Weight non-zero       : {weight_nonzero:,}/{weight_total:,} ({weight_nonzero / weight_total * 100:.2f}%)')
-    print(f'Accuracy validation : {checkpoint.get("val_acc", 0.0) * 100:.2f}%')
+    accuracy = checkpoint.get('validation_character_accuracy', checkpoint.get('val_acc', 0.0))
+    print(f'Accuracy validation : {accuracy * 100:.2f}%')
     print('===============================================\n')
 
 

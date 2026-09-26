@@ -16,7 +16,7 @@ from train_independent_structured import (
     perspective_correct,
     segment_characters,
 )
-from train_lenet5 import CLASS_NAMES, LeNet5
+from train_lenet5 import CLASS_NAMES, LeNet5, require_compatible_classes
 
 
 SOURCE_ROOT = Path("data/OCR/OCR/images/train(1)/detection")
@@ -25,6 +25,7 @@ DATA_ROOT = Path("data/independent_chars_train1")
 
 def load_model(model_path: Path, architecture: str, device: torch.device):
     checkpoint = torch.load(model_path, map_location=device, weights_only=False)
+    require_compatible_classes(checkpoint, model_path)
     model = (LeNet5 if architecture == "dense" else LeNet5Structured50)(len(CLASS_NAMES)).to(device)
     model.load_state_dict(checkpoint["model"])
     model.eval()
