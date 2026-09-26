@@ -189,8 +189,43 @@ Use the enhanced model at inference with:
 During training-data preparation, the plate text encoded in each filename is
 used only to reject a crop when the detected component count does not match the
 known label. At inference, no text label is available: the prototype accepts
-only 8, 9 or 10 detected characters and skips an ambiguous frame instead of
+only 7, 8, 9 or 10 detected characters and skips an ambiguous frame instead of
 returning a fabricated plate string.
+
+## Curated 1,000 one-row plates, dense LeNet-5 (no pruning)
+
+`prepare_one_row_1000.py` creates a separate plate-crop/character-crop dataset
+from the filename bounding boxes in `train(1)/detection/one_row`. It reserves
+1,000 unique plate identities for training, 300 for validation, and a random
+500 identity-disjoint raw ROI test set. Eight visibly confirmed source-label
+anomalies are listed in the new dataset's `review/label_corrections.csv`; five
+were segmentable and included in training. Test ROIs stay in the test set even
+when character segmentation fails, so coverage failures count against exact
+plate accuracy.
+
+The dense model was trained from scratch for 20 epochs with no pruning. On the
+500 random test ROIs, character accuracy was 97.88% among the 387 plates whose
+annotated-length segmentation succeeded; exact plate accuracy was 69.00% over
+all 500, counting segmentation failures as incorrect. At inference without a
+known character count, the ROI-only prototype covered 88.80% and achieved
+68.00% exact plate accuracy over all 500. These are annotated-ROI results, not
+full-frame detector or camera accuracy. See
+`artifacts/one_row_1000_report.md`. Per-plate predictions are saved locally in
+`artifacts/one_row_1000_test_predictions.csv`; that file is excluded from Git
+because it contains plate identifiers.
+
+Rebuild and train:
+
+```powershell
+.venv\Scripts\python.exe prepare_one_row_1000.py --output data/one_row_1000_curated_v4
+.venv\Scripts\python.exe train_one_row_1000.py --data data/one_row_1000_curated_v4 --epochs 20
+```
+
+Run a cropped plate ROI through the dense model:
+
+```powershell
+.venv\Scripts\python.exe recognize_independent.py data\one_row_1000_curated_v4\plates\test\test_0003.png --plate-crop --model artifacts/lenet5_dense_one_row_1000.pt
+```
 
 ## Online labeled-image smoke test
 

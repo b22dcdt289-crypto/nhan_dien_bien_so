@@ -40,6 +40,11 @@ artifacts/*
 !artifacts/plate_enhancement_ablation.json
 !artifacts/plate_localization_validation.json
 !artifacts/enhanced_crop_training_comparison.md
+!artifacts/lenet5_dense_one_row_1000.pt
+!artifacts/one_row_1000_metrics.json
+!artifacts/one_row_1000_metrics_confusion_matrix.csv
+!artifacts/one_row_1000_training_history.csv
+!artifacts/one_row_1000_report.md
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/

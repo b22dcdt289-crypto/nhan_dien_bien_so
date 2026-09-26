@@ -8,7 +8,7 @@ import numpy as np
 import torch
 
 from train_independent_structured import LeNet5Structured50, perspective_correct, segment_characters
-from train_lenet5 import CLASS_NAMES
+from train_lenet5 import CLASS_NAMES, LeNet5
 
 
 def find_plate_candidate(image: np.ndarray, return_box: bool = False):
@@ -45,12 +45,15 @@ def main():
     parser.add_argument("image", type=Path)
     parser.add_argument("--model", type=Path, default=Path("artifacts/independent_lenet5_structured50_train1.pt"))
     parser.add_argument("--box", type=str, help="optional x,y,w,h plate box")
+    parser.add_argument("--plate-crop", action="store_true", help="input image is already a cropped plate ROI")
     parser.add_argument("--enhancement", choices=("none", "clahe", "clahe_sharp"), default=None)
     args = parser.parse_args()
     image = cv2.imread(str(args.image))
     if image is None:
         raise FileNotFoundError(args.image)
-    if args.box:
+    if args.plate_crop:
+        plate, applied, angle = perspective_correct(image)
+    elif args.box:
         x, y, w, h = (int(value) for value in args.box.split(","))
         plate, applied, angle = perspective_correct(image[y : y + h, x : x + w])
     else:
@@ -66,10 +69,18 @@ def main():
         print("frame_skipped=1 reason=segmentation_failed")
         return
     crops, row_count, char_count = segmented
-    if char_count not in (8, 9, 10):
+    if char_count not in (7, 8, 9, 10):
         print(f"frame_skipped=1 reason=ambiguous_character_count characters={char_count} rows={row_count}")
         return
-    model = LeNet5Structured50(len(CLASS_NAMES)).to(device)
+    architecture = checkpoint.get("arch", "LeNet5Structured50")
+    if architecture in {"LeNet5", "LeNet5_dense_no_pruning"}:
+        model = LeNet5(len(CLASS_NAMES)).to(device)
+        macs_per_character = 418704
+        model_name = "LeNet5_dense_no_pruning"
+    else:
+        model = LeNet5Structured50(len(CLASS_NAMES)).to(device)
+        macs_per_character = checkpoint.get("macs_per_character", LeNet5Structured50.macs())
+        model_name = "LeNet5Structured50"
     model.load_state_dict(checkpoint["model"])
     model.eval()
     batch = []
@@ -82,8 +93,8 @@ def main():
     print(f"plate={text}")
     print(f"characters={char_count} rows={row_count} perspective_corrected={applied} angle_deg={angle:.2f}")
     print(f"plate_enhancement={enhancement}")
-    print(f"macs_per_character={checkpoint['macs_per_character']} macs_this_plate={checkpoint['macs_per_character'] * char_count}")
-    print("detector=classical contour+morphology; ocr=LeNet5Structured50; yolo=none")
+    print(f"macs_per_character={macs_per_character} macs_this_plate={macs_per_character * char_count}")
+    print(f"detector=classical contour+morphology; ocr={model_name}; yolo=none")
 
 
 if __name__ == "__main__":
