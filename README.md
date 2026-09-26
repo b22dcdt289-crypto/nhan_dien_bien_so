@@ -402,3 +402,12 @@ to `--data`. Prepared plate images, source data, the local visual-correction
 JSON, and per-plate test predictions are intentionally not versioned; the
 checkpoint and aggregate metrics are versioned. This keeps image-level plate
 identifiers out of the Git repository.
+
+## Structured-pruning speed benchmark
+
+See `artifacts/structured_speed_benchmark_report.md` for a matched dense vs.
+structured LeNet-5 comparison including accuracy, full MAC calculations, and
+measured CPU latency. The benchmark script is `benchmark_structured_speed.py`;
+summary and raw timing samples are in `artifacts/structured_speed_benchmark.json`
+and `artifacts/structured_speed_benchmark_raw.csv`. CPU timing is not a
+DE10-Lite hardware speed claim.

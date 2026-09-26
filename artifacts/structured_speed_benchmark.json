@@ -1,0 +1,214 @@
+{
+  "benchmark": "PyTorch CPU model-forward latency only; excludes image I/O, rectification, segmentation, and formatting",
+  "device": "CPU",
+  "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+  "logical_cpu_count": 16,
+  "torch_version": "2.14.0+cpu",
+  "torch_threads": 1,
+  "warmup_forwards_per_model_and_batch": 250,
+  "measured_forwards_per_model_and_batch": 2500,
+  "input_shape_per_character": [
+    1,
+    32,
+    32
+  ],
+  "class_count": 36,
+  "class_order": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z"
+  ],
+  "batch_sizes_characters": [
+    1,
+    7,
+    8,
+    9,
+    10
+  ],
+  "dense_model": {
+    "checkpoint": "artifacts/independent_lenet5_dense_enhanced_train1.pt",
+    "parameters": 63916,
+    "macs_per_character": 418704,
+    "validation_character_accuracy": 0.914337818522352
+  },
+  "structured_model": {
+    "checkpoint": "artifacts/independent_lenet5_structured50_enhanced_train1.pt",
+    "channels": [
+      4,
+      10,
+      100,
+      70
+    ],
+    "parameters": 35840,
+    "macs_per_character": 212920,
+    "validation_character_accuracy": 0.9127606091971019
+  },
+  "mac_reduction_percent": 49.1478466888303,
+  "results_by_batch_size": {
+    "1": {
+      "dense": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.2775,
+        "mean_ms_per_forward": 0.35204304000000003,
+        "std_ms_per_forward": 1.0974574312222303,
+        "p90_ms_per_forward": 0.50518,
+        "p95_ms_per_forward": 0.6003849999999995,
+        "min_ms_per_forward": 0.1507,
+        "max_ms_per_forward": 54.5719,
+        "characters_per_second_from_median": 3603.6036036036035
+      },
+      "structured_50": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.24915,
+        "mean_ms_per_forward": 0.31249904,
+        "std_ms_per_forward": 0.16966458462386497,
+        "p90_ms_per_forward": 0.47851999999999995,
+        "p95_ms_per_forward": 0.56351,
+        "min_ms_per_forward": 0.1403,
+        "max_ms_per_forward": 2.9452,
+        "characters_per_second_from_median": 4013.6463977523576
+      },
+      "speedup_dense_over_structured_by_median": 1.1137868753762794,
+      "latency_reduction_percent_by_median": 10.216216216216223
+    },
+    "7": {
+      "dense": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.9556,
+        "mean_ms_per_forward": 0.9113741599999999,
+        "std_ms_per_forward": 0.21885346695058985,
+        "p90_ms_per_forward": 1.0676400000000001,
+        "p95_ms_per_forward": 1.1552549999999993,
+        "min_ms_per_forward": 0.3593,
+        "max_ms_per_forward": 2.169,
+        "characters_per_second_from_median": 7325.2406864796985
+      },
+      "structured_50": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.81235,
+        "mean_ms_per_forward": 0.77400164,
+        "std_ms_per_forward": 0.19395152189773862,
+        "p90_ms_per_forward": 0.8953,
+        "p95_ms_per_forward": 0.9771149999999998,
+        "min_ms_per_forward": 0.3016,
+        "max_ms_per_forward": 1.8837,
+        "characters_per_second_from_median": 8616.975441619992
+      },
+      "speedup_dense_over_structured_by_median": 1.1763402474302949,
+      "latency_reduction_percent_by_median": 14.990581833403095
+    },
+    "8": {
+      "dense": {
+        "iterations": 2500,
+        "median_ms_per_forward": 1.04915,
+        "mean_ms_per_forward": 1.0067046,
+        "std_ms_per_forward": 0.22313889586887317,
+        "p90_ms_per_forward": 1.1761,
+        "p95_ms_per_forward": 1.2501599999999997,
+        "min_ms_per_forward": 0.4008,
+        "max_ms_per_forward": 2.5646,
+        "characters_per_second_from_median": 7625.220416527665
+      },
+      "structured_50": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.88365,
+        "mean_ms_per_forward": 0.8500223600000001,
+        "std_ms_per_forward": 0.20059522553099995,
+        "p90_ms_per_forward": 0.9883299999999999,
+        "p95_ms_per_forward": 1.063645,
+        "min_ms_per_forward": 0.3269,
+        "max_ms_per_forward": 2.0291,
+        "characters_per_second_from_median": 9053.358230068465
+      },
+      "speedup_dense_over_structured_by_median": 1.1872913483845413,
+      "latency_reduction_percent_by_median": 15.774674736691608
+    },
+    "9": {
+      "dense": {
+        "iterations": 2500,
+        "median_ms_per_forward": 1.1775,
+        "mean_ms_per_forward": 1.1805066800000001,
+        "std_ms_per_forward": 0.30755449870754237,
+        "p90_ms_per_forward": 1.45404,
+        "p95_ms_per_forward": 1.5775399999999997,
+        "min_ms_per_forward": 0.4299,
+        "max_ms_per_forward": 6.1518,
+        "characters_per_second_from_median": 7643.3121019108285
+      },
+      "structured_50": {
+        "iterations": 2500,
+        "median_ms_per_forward": 0.9861,
+        "mean_ms_per_forward": 0.99145908,
+        "std_ms_per_forward": 0.25963195796934013,
+        "p90_ms_per_forward": 1.2323,
+        "p95_ms_per_forward": 1.358205,
+        "min_ms_per_forward": 0.3492,
+        "max_ms_per_forward": 5.4459,
+        "characters_per_second_from_median": 9126.863401277762
+      },
+      "speedup_dense_over_structured_by_median": 1.1940979616671736,
+      "latency_reduction_percent_by_median": 16.254777070063696
+    },
+    "10": {
+      "dense": {
+        "iterations": 2500,
+        "median_ms_per_forward": 1.2298499999999999,
+        "mean_ms_per_forward": 1.17047032,
+        "std_ms_per_forward": 0.3079432824160509,
+        "p90_ms_per_forward": 1.41351,
+        "p95_ms_per_forward": 1.5030549999999996,
+        "min_ms_per_forward": 0.4499,
+        "max_ms_per_forward": 5.679,
+        "characters_per_second_from_median": 8131.072895068506
+      },
+      "structured_50": {
+        "iterations": 2500,
+        "median_ms_per_forward": 1.0214,
+        "mean_ms_per_forward": 0.9695341599999999,
+        "std_ms_per_forward": 0.25578605657813,
+        "p90_ms_per_forward": 1.17814,
+        "p95_ms_per_forward": 1.2703599999999997,
+        "min_ms_per_forward": 0.3701,
+        "max_ms_per_forward": 2.4592,
+        "characters_per_second_from_median": 9790.483649892305
+      },
+      "speedup_dense_over_structured_by_median": 1.2040826316820048,
+      "latency_reduction_percent_by_median": 16.94922144977028
+    }
+  },
+  "raw_measurements_csv": "artifacts/structured_speed_benchmark_raw.csv",
+  "limitations": "This host CPU benchmark is not DE10-Lite/FPGA latency. A structured model is physically smaller, but board speedup depends on HDL mapping, parallelism, memory bandwidth, clock rate, and Quartus timing closure."
+}

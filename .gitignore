@@ -58,6 +58,9 @@ artifacts/*
 !artifacts/mixed_frontal_1000_perspective_bestformat_v2_metrics_confusion_matrix.csv
 !artifacts/mixed_frontal_1000_perspective_bestformat_v2_history.csv
 !artifacts/mixed_frontal_1000_perspective_bestformat_v2_report.md
+!artifacts/structured_speed_benchmark.json
+!artifacts/structured_speed_benchmark_raw.csv
+!artifacts/structured_speed_benchmark_report.md
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/
