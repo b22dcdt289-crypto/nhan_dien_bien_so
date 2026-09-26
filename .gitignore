@@ -88,6 +88,12 @@ artifacts/*
 !artifacts/frontal1000_augmentation_distribution.csv
 !artifacts/frontal1000_validation_previous_confusion.csv
 !artifacts/frontal1000_validation_finetuned_confusion.csv
+!artifacts/lenet5_dense_frontal1000_cost_v1.pt
+!artifacts/frontal1000_pruning_vs_no_pruning_metrics.json
+!artifacts/frontal1000_so_sanh_pruning_khong_pruning.md
+!artifacts/frontal1000_dense_validation_confusion.csv
+!artifacts/frontal1000_dense_test_reference_confusion.csv
+!artifacts/frontal1000_validation_per_class_comparison.csv
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/
