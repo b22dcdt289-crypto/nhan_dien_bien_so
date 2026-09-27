@@ -97,3 +97,11 @@ artifacts/*
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/
+!artifacts/lenet5_dense_two_row_car_moto_v1.pt
+!artifacts/two_row_dense_metrics.json
+!artifacts/bao_cao_lenet5_dense_bien_hai_hang.md
+!artifacts/two_row_test_per_class_comparison.csv
+!artifacts/two_row_dense_training_history.csv
+!artifacts/two_row_test_reference_before_confusion.csv
+!artifacts/two_row_test_reference_after_confusion.csv
+!artifacts/two_row_confusion_cost_M.csv
