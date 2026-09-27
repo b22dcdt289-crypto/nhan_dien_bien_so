@@ -2,6 +2,28 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Train LeNet-5 1 hang + 2 hang (dense)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/train_vscode_dense_demo.py",
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "console": "internalConsole",
+      "args": ["--one-epochs", "20", "--two-epochs", "12"],
+      "justMyCode": true
+    },
+    {
+      "name": "Cap nhat bao cao LeNet-5 (khong train)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/train_vscode_dense_demo.py",
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "console": "internalConsole",
+      "args": ["--report-only"],
+      "justMyCode": true
+    },
+    {
       "name": "Nhận diện biển số - structured LeNet",
       "type": "debugpy",
       "request": "launch",

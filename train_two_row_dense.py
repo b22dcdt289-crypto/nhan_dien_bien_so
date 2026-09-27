@@ -554,7 +554,7 @@ def render_report(path: Path, metrics: dict):
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def main():
+def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser(description="Dense no-pruning LeNet-5 fine-tune from frontal one-row cars to two-row cars/motorcycles.")
     parser.add_argument("--one-row-data", type=Path, default=ONE_ROW_DATA)
     parser.add_argument("--two-row-data", type=Path, default=TWO_ROW_DATA)
@@ -570,7 +570,7 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("artifacts/lenet5_dense_two_row_car_moto_v1.pt"))
     parser.add_argument("--metrics", type=Path, default=Path("artifacts/two_row_dense_metrics.json"))
     parser.add_argument("--report", type=Path, default=Path("artifacts/bao_cao_lenet5_dense_bien_hai_hang.md"))
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -803,8 +803,8 @@ def main():
     max_acts = 6 * 28 * 28
     macs_by_length = {str(length): MACS_PER_GLYPH * length for length in range(7, 11)}
     report_json_path = args.metrics.as_posix()
-    per_class_csv = "artifacts/two_row_test_per_class_comparison.csv"
-    history_csv = "artifacts/two_row_dense_training_history.csv"
+    per_class_csv = (args.metrics.parent / "two_row_test_per_class_comparison.csv").as_posix()
+    history_csv = (args.metrics.parent / "two_row_dense_training_history.csv").as_posix()
     metrics = {
         "experiment": "No-pruning dense LeNet-5 curriculum: frontal one-row 1,000-car gate followed by grouped two-row car/motorcycle fine-tuning",
         "phase1_gate": phase1_gate,
@@ -906,9 +906,9 @@ def main():
             "report_markdown": args.report.as_posix(),
             "per_class_csv": per_class_csv,
             "history_csv": history_csv,
-            "test_confusion_before_csv": "artifacts/two_row_test_reference_before_confusion.csv",
-            "test_confusion_after_csv": "artifacts/two_row_test_reference_after_confusion.csv",
-            "confusion_cost_M_csv": "artifacts/two_row_confusion_cost_M.csv",
+            "test_confusion_before_csv": (args.metrics.parent / "two_row_test_reference_before_confusion.csv").as_posix(),
+            "test_confusion_after_csv": (args.metrics.parent / "two_row_test_reference_after_confusion.csv").as_posix(),
+            "confusion_cost_M_csv": (args.metrics.parent / "two_row_confusion_cost_M.csv").as_posix(),
         },
         "caveats": [
             "Pha một 95–99% là validation crop tham chiếu; test one-row end-to-end chưa đo được do segmenter/label crops.",

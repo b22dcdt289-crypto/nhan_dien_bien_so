@@ -7,6 +7,7 @@ __pycache__/
 *.part
 *.zip
 artifacts/*
+!artifacts/vscode_demo/
 !artifacts/lenet5_vnlp_corrected_pruned25.pt
 !artifacts/lenet5_ocr_97target_final.pt
 !artifacts/lenet5_ocr_pruned25_final.pt
