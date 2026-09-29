@@ -98,6 +98,7 @@ artifacts/*
 hardware/**/db/
 hardware/**/incremental_db/
 hardware/**/output_files/
+hardware/de10_lite_ocr/generated/
 !artifacts/lenet5_dense_two_row_car_moto_v1.pt
 !artifacts/two_row_dense_metrics.json
 !artifacts/bao_cao_lenet5_dense_bien_hai_hang.md

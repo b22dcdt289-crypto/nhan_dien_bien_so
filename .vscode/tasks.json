@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DE10-Lite 1/5 - Chuẩn bị 50 ký tự thử",
+      "type": "process",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["hardware\\de10_lite_ocr\\prepare_demo.py"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10-Lite 2/5 - Tổng hợp mạch OCR",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_sh.exe",
+      "args": ["--flow", "compile", "hardware\\de10_lite_ocr\\OcrDemo.qpf"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10-Lite 3/5 - Nạp mạch OCR lên kit",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_pgm.exe",
+      "args": ["-c", "1", "-m", "jtag", "-o", "p;hardware\\de10_lite_ocr\\output_files\\OcrDemo.sof"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10-Lite 4/5 - Chạy 50 ký tự trên kit",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_stp.exe",
+      "args": ["-t", "hardware\\de10_lite_ocr\\run_demo.tcl"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10-Lite 5/5 - Xem báo cáo tài nguyên và accuracy",
+      "type": "process",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["hardware\\de10_lite_ocr\\analyze_demo.py"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10-Lite - Demo đầy đủ",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "DE10-Lite 1/5 - Chuẩn bị 50 ký tự thử",
+        "DE10-Lite 2/5 - Tổng hợp mạch OCR",
+        "DE10-Lite 3/5 - Nạp mạch OCR lên kit",
+        "DE10-Lite 4/5 - Chạy 50 ký tự trên kit",
+        "DE10-Lite 5/5 - Xem báo cáo tài nguyên và accuracy"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
