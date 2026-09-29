@@ -52,6 +52,171 @@
         "DE10-Lite 5/5 - Xem báo cáo tài nguyên và accuracy"
       ],
       "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Train lại (thư mục kết quả mới)",
+      "type": "process",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["hardware\\de10_lite_ocr_compare\\train_compare.py", "--out", "${workspaceFolder}\\${input:de10CompareTrainOut}"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Xuất trọng số và 50 ký tự",
+      "type": "process",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["hardware\\de10_lite_ocr_compare\\export_compare.py"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Tổng hợp Dense ROM",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_sh.exe",
+      "args": ["--flow", "compile", "hardware\\de10_lite_ocr_compare\\dense_rom\\OcrBench.qpf"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Nạp Dense ROM",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_pgm.exe",
+      "args": ["-c", "1", "-m", "jtag", "-o", "p;hardware\\de10_lite_ocr_compare\\dense_rom\\output_files\\OcrBench.sof"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Đo Dense ROM",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_stp.exe",
+      "args": ["-t", "hardware\\de10_lite_ocr_compare\\run_variant.tcl", "dense_rom"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Dense ROM",
+      "dependsOrder": "sequence",
+      "dependsOn": ["DE10 Compare - Tổng hợp Dense ROM", "DE10 Compare - Nạp Dense ROM", "DE10 Compare - Đo Dense ROM"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Tổng hợp Dense stream",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_sh.exe",
+      "args": ["--flow", "compile", "hardware\\de10_lite_ocr_compare\\dense_stream\\OcrBench.qpf"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Nạp Dense stream",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_pgm.exe",
+      "args": ["-c", "1", "-m", "jtag", "-o", "p;hardware\\de10_lite_ocr_compare\\dense_stream\\output_files\\OcrBench.sof"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Đo Dense stream",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_stp.exe",
+      "args": ["-t", "hardware\\de10_lite_ocr_compare\\run_variant.tcl", "dense_stream"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Dense stream",
+      "dependsOrder": "sequence",
+      "dependsOn": ["DE10 Compare - Tổng hợp Dense stream", "DE10 Compare - Nạp Dense stream", "DE10 Compare - Đo Dense stream"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Tổng hợp Pruned ROM",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_sh.exe",
+      "args": ["--flow", "compile", "hardware\\de10_lite_ocr_compare\\pruned_rom\\OcrBench.qpf"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Nạp Pruned ROM",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_pgm.exe",
+      "args": ["-c", "1", "-m", "jtag", "-o", "p;hardware\\de10_lite_ocr_compare\\pruned_rom\\output_files\\OcrBench.sof"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Đo Pruned ROM",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_stp.exe",
+      "args": ["-t", "hardware\\de10_lite_ocr_compare\\run_variant.tcl", "pruned_rom"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Pruned ROM",
+      "dependsOrder": "sequence",
+      "dependsOn": ["DE10 Compare - Tổng hợp Pruned ROM", "DE10 Compare - Nạp Pruned ROM", "DE10 Compare - Đo Pruned ROM"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Tổng hợp Pruned stream",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_sh.exe",
+      "args": ["--flow", "compile", "hardware\\de10_lite_ocr_compare\\pruned_stream\\OcrBench.qpf"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Nạp Pruned stream",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_pgm.exe",
+      "args": ["-c", "1", "-m", "jtag", "-o", "p;hardware\\de10_lite_ocr_compare\\pruned_stream\\output_files\\OcrBench.sof"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Đo Pruned stream",
+      "type": "process",
+      "command": "E:\\k\\quartus\\bin64\\quartus_stp.exe",
+      "args": ["-t", "hardware\\de10_lite_ocr_compare\\run_variant.tcl", "pruned_stream"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Pruned stream",
+      "dependsOrder": "sequence",
+      "dependsOn": ["DE10 Compare - Tổng hợp Pruned stream", "DE10 Compare - Nạp Pruned stream", "DE10 Compare - Đo Pruned stream"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Tổng hợp báo cáo",
+      "type": "process",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["hardware\\de10_lite_ocr_compare\\analyze_compare.py"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Phần cứng đầy đủ",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "DE10 Compare - Xuất trọng số và 50 ký tự",
+        "DE10 Compare - Dense ROM",
+        "DE10 Compare - Dense stream",
+        "DE10 Compare - Pruned ROM",
+        "DE10 Compare - Pruned stream",
+        "DE10 Compare - Tổng hợp báo cáo"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "de10CompareTrainOut",
+      "type": "promptString",
+      "description": "Tên thư mục mới trong repo để lưu checkpoint, history và metrics (không ghi đè dữ liệu cũ)",
+      "default": "artifacts\\compare_conv2_stream_manual_1"
     }
   ]
 }
