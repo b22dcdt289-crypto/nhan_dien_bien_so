@@ -1,0 +1,187 @@
+{
+  "training_and_evaluation_source": "2,000 generated frontal car plates only",
+  "real_photos_read": false,
+  "run": {
+    "seed": 20261003,
+    "epochs": 12,
+    "prune_after": 4,
+    "batch_size": 256,
+    "torch_version": "2.14.0+cpu",
+    "cpu_threads": 4,
+    "elapsed_seconds": 23.662401299981866,
+    "peak_process_rss_bytes": 551313408,
+    "data_manifest_sha256": "03f71e66286e3f249924d68b9e9aa8dff8a08e65bbbcb2d56590f06587a361b6",
+    "split_plates": {
+      "train": 1600,
+      "val": 200,
+      "test": 200
+    },
+    "real_external_test_plates": 0,
+    "selected_conv2_indices": [
+      1,
+      3,
+      4,
+      8,
+      11,
+      12,
+      13,
+      15
+    ],
+    "synthetic_only": true,
+    "real_test_note": "Not run; no real photos read."
+  },
+  "checkpoint_sha256": {
+    "dense": "086cf267de930ec239aa569666ea8c29757ec6505d36ba1be5ab777fde41a87c",
+    "pruned": "81d83cc10112b6e7347ebdaa5e543454673d6e04d12965c9987f3774deef667d"
+  },
+  "synthetic_test": {
+    "dense": {
+      "plates": 200,
+      "exact": 200,
+      "correct_chars_aligned": 1600,
+      "aligned_chars": 1600,
+      "segmentation_success": 200,
+      "edit_errors": 0,
+      "chars": 1600,
+      "character_accuracy_on_aligned": 1.0,
+      "plate_exact_accuracy": 1.0,
+      "character_error_rate_edit_distance": 0.0
+    },
+    "pruned": {
+      "plates": 200,
+      "exact": 200,
+      "correct_chars_aligned": 1600,
+      "aligned_chars": 1600,
+      "segmentation_success": 200,
+      "edit_errors": 0,
+      "chars": 1600,
+      "character_accuracy_on_aligned": 1.0,
+      "plate_exact_accuracy": 1.0,
+      "character_error_rate_edit_distance": 0.0
+    }
+  },
+  "model_size": {
+    "dense": {
+      "weights": 63150,
+      "biases": 256,
+      "parameters": 63406,
+      "fp32_bytes": 253624,
+      "int8_weights_int32_bias_bytes": 64174,
+      "macs_per_character": 418200,
+      "macs_per_8_character_plate": 3345600,
+      "layers": {
+        "features.0": {
+          "weight_shape": [
+            6,
+            1,
+            5,
+            5
+          ],
+          "weights": 150,
+          "biases": 6,
+          "macs": 117600
+        },
+        "features.3": {
+          "weight_shape": [
+            16,
+            6,
+            5,
+            5
+          ],
+          "weights": 2400,
+          "biases": 16,
+          "macs": 240000
+        },
+        "classifier.0": {
+          "weight_shape": [
+            120,
+            400
+          ],
+          "weights": 48000,
+          "biases": 120,
+          "macs": 48000
+        },
+        "classifier.2": {
+          "weight_shape": [
+            84,
+            120
+          ],
+          "weights": 10080,
+          "biases": 84,
+          "macs": 10080
+        },
+        "classifier.4": {
+          "weight_shape": [
+            30,
+            84
+          ],
+          "weights": 2520,
+          "biases": 30,
+          "macs": 2520
+        }
+      }
+    },
+    "pruned": {
+      "weights": 37950,
+      "biases": 248,
+      "parameters": 38198,
+      "fp32_bytes": 152792,
+      "int8_weights_int32_bias_bytes": 38942,
+      "macs_per_character": 274200,
+      "macs_per_8_character_plate": 2193600,
+      "layers": {
+        "features.0": {
+          "weight_shape": [
+            6,
+            1,
+            5,
+            5
+          ],
+          "weights": 150,
+          "biases": 6,
+          "macs": 117600
+        },
+        "features.3": {
+          "weight_shape": [
+            8,
+            6,
+            5,
+            5
+          ],
+          "weights": 1200,
+          "biases": 8,
+          "macs": 120000
+        },
+        "classifier.0": {
+          "weight_shape": [
+            120,
+            200
+          ],
+          "weights": 24000,
+          "biases": 120,
+          "macs": 24000
+        },
+        "classifier.2": {
+          "weight_shape": [
+            84,
+            120
+          ],
+          "weights": 10080,
+          "biases": 84,
+          "macs": 10080
+        },
+        "classifier.4": {
+          "weight_shape": [
+            30,
+            84
+          ],
+          "weights": 2520,
+          "biases": 30,
+          "macs": 2520
+        }
+      }
+    }
+  },
+  "tested_class_count": 18,
+  "all_dataset_class_count": 22
+}

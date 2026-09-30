@@ -1,8 +1,8 @@
 """Matched LeNet-5 dense vs 50% Conv2-filter pruning on frontal rendered cars.
 
-Train/validation/test identities are disjoint. Real-photo evaluation is from
-held-out train(1) source identities and uses annotated plate boxes, but does
-not use the ground-truth character count to choose segmentation.
+Train/validation/test identities are disjoint. With --synthetic-only, no real
+photos are read. Optional real-photo evaluation uses held-out train(1) source
+identities and annotated plate boxes without the ground-truth character count.
 """
 
 from __future__ import annotations
@@ -324,6 +324,8 @@ def main() -> None:
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--seed", type=int, default=20261001)
     parser.add_argument("--audit-only", action="store_true")
+    parser.add_argument("--synthetic-only", action="store_true",
+                        help="Train, validate and test only on the 2,000 rendered plates; do not read real photos.")
     args = parser.parse_args()
     if not 1 <= args.prune_after < args.epochs:
         raise ValueError("prune-after must be between 1 and epochs-1")
@@ -386,18 +388,20 @@ def main() -> None:
     for name, model in models.items():
         ckpt = torch.load(args.output / f"{name}.pt", map_location="cpu", weights_only=False)
         model.load_state_dict(ckpt["model"])
-    train_labels = {row["label"] for row in source_rows["train"]}
-    val_labels = {row["label"] for row in source_rows["val"]}
-    test_labels = {row["label"] for row in source_rows["test"]}
-    synthetic_labels = train_labels | val_labels | test_labels
-    real_one = real_holdout(args.real, "one_row_car", args.real_test_per_layout, synthetic_labels, args.seed)
-    real_two = real_holdout(
-        args.real, "two_row_car", args.real_test_per_layout,
-        synthetic_labels | {row["text"] for row in real_one}, args.seed,
-    )
-    real = real_one + real_two
-    if len({row["text"] for row in real}) != len(real):
-        raise RuntimeError("Real test plate identities overlap between layouts")
+    real = []
+    if not args.synthetic_only:
+        train_labels = {row["label"] for row in source_rows["train"]}
+        val_labels = {row["label"] for row in source_rows["val"]}
+        test_labels = {row["label"] for row in source_rows["test"]}
+        synthetic_labels = train_labels | val_labels | test_labels
+        real_one = real_holdout(args.real, "one_row_car", args.real_test_per_layout, synthetic_labels, args.seed)
+        real_two = real_holdout(
+            args.real, "two_row_car", args.real_test_per_layout,
+            synthetic_labels | {row["text"] for row in real_one}, args.seed,
+        )
+        real = real_one + real_two
+        if len({row["text"] for row in real}) != len(real):
+            raise RuntimeError("Real test plate identities overlap between layouts")
     result = {"run": {"seed": args.seed, "epochs": args.epochs, "prune_after": args.prune_after,
                       "batch_size": args.batch_size, "torch_version": torch.__version__,
                       "cpu_threads": args.threads, "elapsed_seconds": time.perf_counter() - wall_start,
@@ -405,12 +409,14 @@ def main() -> None:
                       "data_manifest_sha256": sha(args.data / "manifest.csv"),
                       "split_plates": {key: len(value) for key, value in plates.items()},
                       "real_external_test_plates": len(real), "selected_conv2_indices": selected_channels,
-                      "real_test_note": "Source filename bounding box used; no automatic full-image detector."},
+                      "synthetic_only": args.synthetic_only,
+                      "real_test_note": "Not run; no real photos read." if args.synthetic_only else
+                                        "Source filename bounding box used; no automatic full-image detector."},
               "models": {}}
     for name, model in models.items():
         crop, _pred, _confidence = evaluate_crops(model, x_test, y_test)
         synthetic = plate_metrics(model, plates["test"], synthetic=True, data_root=args.data)
-        external = plate_metrics(model, real, synthetic=False)
+        external = None if args.synthetic_only else plate_metrics(model, real, synthetic=False)
         channels = (6, 16 if name == "dense" else 8, 120, 84)
         result["models"][name] = {
             "best_val_character_accuracy": best[name][0], "best_epoch": best[name][2],
@@ -424,9 +430,10 @@ def main() -> None:
         }
         print(json.dumps({"event": "evaluate", "model": name,
                           "synthetic_plate_accuracy": synthetic["total"]["plate_exact_accuracy"],
-                          "real_plate_accuracy": external["total"]["plate_exact_accuracy"],
-                          "real_segmentation_success": external["total"]["segmentation_success"]}), flush=True)
-        for domain, metrics in (("synthetic", synthetic), ("real", external)):
+                          "real_plate_accuracy": None if external is None else external["total"]["plate_exact_accuracy"],
+                          "real_segmentation_success": None if external is None else external["total"]["segmentation_success"]}), flush=True)
+        domains = (("synthetic", synthetic),) if external is None else (("synthetic", synthetic), ("real", external))
+        for domain, metrics in domains:
             with (args.output / f"{name}_{domain}_confusion.csv").open("w", newline="", encoding="utf-8") as handle:
                 writer = csv.writer(handle)
                 writer.writerow(["true/pred", *CLASS_NAMES])
