@@ -1,0 +1,53 @@
+{
+  "device": "CPU",
+  "torch_version": "2.14.0+cpu",
+  "threads": 4,
+  "input_shape_per_glyph": [
+    1,
+    32,
+    32
+  ],
+  "randomized_interleaved_order": true,
+  "model_sha256": {
+    "dense": "b31bf971c9324068f32086f357c0abafbeaf75bc7164c3fb6b25e373d2f11591",
+    "pruned": "16ebca8f55a71bb9b015325637171b8c8adb290453c615616a0103dd78f5304d"
+  },
+  "latency": {
+    "dense": {
+      "1": {
+        "repeats": 1000,
+        "median_ms_per_batch": 0.17270000000000002,
+        "p95_ms_per_batch": 0.275,
+        "min_ms_per_batch": 0.1486,
+        "max_ms_per_batch": 0.6784,
+        "threads": 4
+      },
+      "8": {
+        "repeats": 1000,
+        "median_ms_per_batch": 0.29525,
+        "p95_ms_per_batch": 0.6076,
+        "min_ms_per_batch": 0.219,
+        "max_ms_per_batch": 0.7714,
+        "threads": 4
+      }
+    },
+    "pruned": {
+      "1": {
+        "repeats": 1000,
+        "median_ms_per_batch": 0.17045,
+        "p95_ms_per_batch": 0.2589,
+        "min_ms_per_batch": 0.1472,
+        "max_ms_per_batch": 0.5155,
+        "threads": 4
+      },
+      "8": {
+        "repeats": 1000,
+        "median_ms_per_batch": 0.2824,
+        "p95_ms_per_batch": 0.583,
+        "min_ms_per_batch": 0.2113,
+        "max_ms_per_batch": 0.8335,
+        "threads": 4
+      }
+    }
+  }
+}

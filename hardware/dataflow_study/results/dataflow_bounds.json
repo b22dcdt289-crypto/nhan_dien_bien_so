@@ -1,0 +1,135 @@
+{
+  "board": {
+    "name": "DE10-Lite / MAX 10 10M50DAF484C7G",
+    "logic_elements_capacity": 49760,
+    "internal_memory_bits_capacity": 1677312,
+    "nine_bit_multiplier_capacity": 288,
+    "clock_assumption_hz": 50000000
+  },
+  "model": {
+    "dense": {
+      "conv2_channels": 16,
+      "layer_macs": {
+        "conv1": 117600,
+        "conv2": 240000,
+        "fc1": 48000,
+        "fc2": 10080,
+        "fc3": 2520
+      },
+      "macs_per_character": 418200,
+      "macs_per_eight_character_plate": 3345600,
+      "layer_weights": {
+        "conv1": 150,
+        "conv2": 2400,
+        "fc1": 48000,
+        "fc2": 10080,
+        "fc3": 2520
+      },
+      "weights": 63150,
+      "layer_biases": {
+        "conv1": 6,
+        "conv2": 16,
+        "fc1": 120,
+        "fc2": 84,
+        "fc3": 30
+      },
+      "biases": 256,
+      "parameters": 63406,
+      "fp32_model_bytes": 253624,
+      "int8_weight_int32_bias_bytes": 64174,
+      "int8_weight_int32_bias_bits": 513392,
+      "buffers": {
+        "input_frame_bytes": 1024,
+        "conv1_four_line_bytes": 128,
+        "conv1_window_bytes": 25,
+        "conv2_four_line_bytes": 336,
+        "conv2_window_bytes": 150,
+        "conv1_full_feature_map_bytes": 4704,
+        "pool1_full_feature_map_bytes": 1176,
+        "conv2_full_feature_map_bytes": 1600,
+        "pool2_full_feature_map_bytes": 400
+      },
+      "ideal_pe8_cycles_per_character_no_stalls_or_non_mac_ops": 52275,
+      "ideal_pe8_compute_ms_per_character": 1.0455,
+      "ideal_pe8_compute_ms_per_eight_character_plate": 8.364,
+      "minimum_input_frame_stream_cycles_at_one_pixel_per_clock": 1024,
+      "minimum_input_frame_stream_ms_at_one_pixel_per_clock": 0.02048
+    },
+    "pruned_conv2_50_percent": {
+      "conv2_channels": 8,
+      "layer_macs": {
+        "conv1": 117600,
+        "conv2": 120000,
+        "fc1": 24000,
+        "fc2": 10080,
+        "fc3": 2520
+      },
+      "macs_per_character": 274200,
+      "macs_per_eight_character_plate": 2193600,
+      "layer_weights": {
+        "conv1": 150,
+        "conv2": 1200,
+        "fc1": 24000,
+        "fc2": 10080,
+        "fc3": 2520
+      },
+      "weights": 37950,
+      "layer_biases": {
+        "conv1": 6,
+        "conv2": 8,
+        "fc1": 120,
+        "fc2": 84,
+        "fc3": 30
+      },
+      "biases": 248,
+      "parameters": 38198,
+      "fp32_model_bytes": 152792,
+      "int8_weight_int32_bias_bytes": 38942,
+      "int8_weight_int32_bias_bits": 311536,
+      "buffers": {
+        "input_frame_bytes": 1024,
+        "conv1_four_line_bytes": 128,
+        "conv1_window_bytes": 25,
+        "conv2_four_line_bytes": 336,
+        "conv2_window_bytes": 150,
+        "conv1_full_feature_map_bytes": 4704,
+        "pool1_full_feature_map_bytes": 1176,
+        "conv2_full_feature_map_bytes": 800,
+        "pool2_full_feature_map_bytes": 200
+      },
+      "ideal_pe8_cycles_per_character_no_stalls_or_non_mac_ops": 34275,
+      "ideal_pe8_compute_ms_per_character": 0.6855,
+      "ideal_pe8_compute_ms_per_eight_character_plate": 5.484,
+      "minimum_input_frame_stream_cycles_at_one_pixel_per_clock": 1024,
+      "minimum_input_frame_stream_ms_at_one_pixel_per_clock": 0.02048
+    }
+  },
+  "comparison": {
+    "mac_reduction_fraction": 0.34433285509325684,
+    "weight_reduction_fraction": 0.3990498812351544,
+    "ideal_compute_speedup_pe8": 1.525164113785558,
+    "int8_model_bits_fraction_of_board_dense": 0.3060802045177045,
+    "int8_model_bits_fraction_of_board_pruned": 0.18573527167277168
+  },
+  "shared_dataflow_assumptions": {
+    "mac_lanes": 8,
+    "weight_bits": 8,
+    "activation_bits": 8,
+    "partial_sum_bits": 32,
+    "weight_stationary_local_weight_register_min_bytes": 8,
+    "output_stationary_local_partial_sum_register_min_bytes": 32,
+    "row_stationary_local_filter_row_register_min_bytes": 40,
+    "conv1_input_unique_bytes_if_streamed_once": 1024,
+    "conv2_input_unique_bytes_if_streamed_once": 1176,
+    "non_mac_ops_not_in_cycle_bound": [
+      "bias",
+      "tanh LUT",
+      "average pooling",
+      "memory stalls",
+      "pipeline fill/drain",
+      "control",
+      "JTAG/host transfer"
+    ],
+    "dataflow_warning": "WS, OS and RS have identical MAC totals. Distinct post-fit area, Fmax, SRAM traffic or latency require separate RTL schedules and synthesis; this file contains no such measurements."
+  }
+}

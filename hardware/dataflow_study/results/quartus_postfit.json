@@ -1,0 +1,28 @@
+{
+  "dense": {
+    "source": "hardware/dataflow_study/rtl_eval/dense_stream/output_files",
+    "device": "10M50DAF484C7G",
+    "top": "Bench_dense_stream",
+    "logic_elements": 2356,
+    "dedicated_logic_registers": 1066,
+    "memory_bits": 560432,
+    "multiplier_9bit_elements": 1,
+    "fmax_mhz_slow_85c": 64.76,
+    "setup_slack_ns_first_85c": 4.558,
+    "setup_and_hold_fully_constrained": false,
+    "physical_board_measured": false
+  },
+  "pruned": {
+    "source": "hardware/dataflow_study/rtl_eval/pruned_stream/output_files",
+    "device": "10M50DAF484C7G",
+    "top": "Bench_pruned_stream",
+    "logic_elements": 2335,
+    "dedicated_logic_registers": 1066,
+    "memory_bits": 358832,
+    "multiplier_9bit_elements": 1,
+    "fmax_mhz_slow_85c": 68.59,
+    "setup_slack_ns_first_85c": 5.421,
+    "setup_and_hold_fully_constrained": false,
+    "physical_board_measured": false
+  }
+}

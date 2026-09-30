@@ -100,6 +100,7 @@ hardware/**/incremental_db/
 hardware/**/output_files/
 hardware/de10_lite_ocr/generated/
 hardware/de10_lite_ocr_compare/**/generated/
+hardware/dataflow_study/rtl_eval/**/generated/
 !artifacts/lenet5_dense_two_row_car_moto_v1.pt
 !artifacts/two_row_dense_metrics.json
 !artifacts/bao_cao_lenet5_dense_bien_hai_hang.md

@@ -1,0 +1,860 @@
+{
+  "scope": "2,000 frontal rendered car plates (1,000 one-row + 1,000 two-row); mixed fine-tune also uses disjoint real train(1) plates",
+  "data": {
+    "synthetic_train_plates": 1600,
+    "real_train_plates": 2000,
+    "real_validation_plates": 400,
+    "synthetic_test_plates": 200,
+    "real_prepared_test_plates": 400,
+    "real_external_test_plates": 200,
+    "identity_overlap": {
+      "train_val": 0,
+      "train_test": 0,
+      "val_test": 0
+    }
+  },
+  "checkpoints_sha256": {
+    "dense": "b31bf971c9324068f32086f357c0abafbeaf75bc7164c3fb6b25e373d2f11591",
+    "pruned": "16ebca8f55a71bb9b015325637171b8c8adb290453c615616a0103dd78f5304d"
+  },
+  "models": {
+    "dense": {
+      "best_real_validation_character_accuracy": 0.973125,
+      "best_epoch": 12,
+      "synthetic_only_real_external_plate_exact": 0.0,
+      "synthetic_test_character_accuracy": 1.0,
+      "prepared_real_test": {
+        "plates": 400,
+        "exact": 336,
+        "characters": 3200,
+        "correct": 3083,
+        "character_accuracy": 0.9634375,
+        "plate_exact_accuracy": 0.84
+      },
+      "prepared_real_by_layout": {
+        "one_row_car": {
+          "plates": 200,
+          "exact": 179,
+          "characters": 1600,
+          "correct": 1553,
+          "character_accuracy": 0.970625,
+          "plate_exact_accuracy": 0.895
+        },
+        "two_row_car": {
+          "plates": 200,
+          "exact": 157,
+          "characters": 1600,
+          "correct": 1530,
+          "character_accuracy": 0.95625,
+          "plate_exact_accuracy": 0.785
+        }
+      },
+      "real_external_test": {
+        "plates": 200,
+        "exact": 110,
+        "correct_chars_aligned": 954,
+        "aligned_chars": 976,
+        "segmentation_success": 168,
+        "edit_errors": 348,
+        "chars": 1600,
+        "character_accuracy_on_aligned": 0.9774590163934426,
+        "plate_exact_accuracy": 0.55,
+        "character_error_rate_edit_distance": 0.2175
+      },
+      "real_external_by_layout": {
+        "one_row_car": {
+          "plates": 100,
+          "exact": 70,
+          "correct_chars_aligned": 587,
+          "aligned_chars": 592,
+          "segmentation_success": 92,
+          "edit_errors": 100,
+          "chars": 800,
+          "character_accuracy_on_aligned": 0.9915540540540541,
+          "plate_exact_accuracy": 0.7,
+          "character_error_rate_edit_distance": 0.125
+        },
+        "two_row_car": {
+          "plates": 100,
+          "exact": 40,
+          "correct_chars_aligned": 367,
+          "aligned_chars": 384,
+          "segmentation_success": 76,
+          "edit_errors": 248,
+          "chars": 800,
+          "character_accuracy_on_aligned": 0.9557291666666666,
+          "plate_exact_accuracy": 0.4,
+          "character_error_rate_edit_distance": 0.31
+        }
+      },
+      "real_external_failures": {
+        "segmentation_or_row": 32,
+        "character_count": 46
+      },
+      "size_and_macs": {
+        "weights": 63150,
+        "biases": 256,
+        "parameters": 63406,
+        "fp32_bytes": 253624,
+        "int8_weights_int32_bias_bytes": 64174,
+        "macs_per_character": 418200,
+        "macs_per_8_character_plate": 3345600,
+        "layers": {
+          "features.0": {
+            "weight_shape": [
+              6,
+              1,
+              5,
+              5
+            ],
+            "weights": 150,
+            "biases": 6,
+            "macs": 117600
+          },
+          "features.3": {
+            "weight_shape": [
+              16,
+              6,
+              5,
+              5
+            ],
+            "weights": 2400,
+            "biases": 16,
+            "macs": 240000
+          },
+          "classifier.0": {
+            "weight_shape": [
+              120,
+              400
+            ],
+            "weights": 48000,
+            "biases": 120,
+            "macs": 48000
+          },
+          "classifier.2": {
+            "weight_shape": [
+              84,
+              120
+            ],
+            "weights": 10080,
+            "biases": 84,
+            "macs": 10080
+          },
+          "classifier.4": {
+            "weight_shape": [
+              30,
+              84
+            ],
+            "weights": 2520,
+            "biases": 30,
+            "macs": 2520
+          }
+        }
+      },
+      "cpu_forward_latency": {
+        "1": {
+          "repeats": 1000,
+          "median_ms_per_batch": 0.17270000000000002,
+          "p95_ms_per_batch": 0.275,
+          "min_ms_per_batch": 0.1486,
+          "max_ms_per_batch": 0.6784,
+          "threads": 4
+        },
+        "8": {
+          "repeats": 1000,
+          "median_ms_per_batch": 0.29525,
+          "p95_ms_per_batch": 0.6076,
+          "min_ms_per_batch": 0.219,
+          "max_ms_per_batch": 0.7714,
+          "threads": 4
+        }
+      },
+      "int8_reference_prepared_test": {
+        "checkpoint_sha256": "b31bf971c9324068f32086f357c0abafbeaf75bc7164c3fb6b25e373d2f11591",
+        "weight_bytes": 63150,
+        "bias_count": 256,
+        "shifts": [
+          10,
+          11,
+          11,
+          10,
+          10
+        ],
+        "total": {
+          "plates": 400,
+          "fp32_exact": 336,
+          "int8_exact": 336,
+          "characters": 3200,
+          "fp32_correct": 3083,
+          "int8_correct": 3083,
+          "agreement": 3198
+        },
+        "by_layout": {
+          "one_row_car": {
+            "plates": 200,
+            "fp32_exact": 179,
+            "int8_exact": 178,
+            "characters": 1600,
+            "fp32_correct": 1553,
+            "int8_correct": 1552,
+            "agreement": 1599
+          },
+          "two_row_car": {
+            "plates": 200,
+            "fp32_exact": 157,
+            "int8_exact": 158,
+            "characters": 1600,
+            "fp32_correct": 1530,
+            "int8_correct": 1531,
+            "agreement": 1599
+          }
+        }
+      }
+    },
+    "pruned": {
+      "best_real_validation_character_accuracy": 0.973125,
+      "best_epoch": 12,
+      "synthetic_only_real_external_plate_exact": 0.0,
+      "synthetic_test_character_accuracy": 1.0,
+      "prepared_real_test": {
+        "plates": 400,
+        "exact": 334,
+        "characters": 3200,
+        "correct": 3079,
+        "character_accuracy": 0.9621875,
+        "plate_exact_accuracy": 0.835
+      },
+      "prepared_real_by_layout": {
+        "one_row_car": {
+          "plates": 200,
+          "exact": 177,
+          "characters": 1600,
+          "correct": 1550,
+          "character_accuracy": 0.96875,
+          "plate_exact_accuracy": 0.885
+        },
+        "two_row_car": {
+          "plates": 200,
+          "exact": 157,
+          "characters": 1600,
+          "correct": 1529,
+          "character_accuracy": 0.955625,
+          "plate_exact_accuracy": 0.785
+        }
+      },
+      "real_external_test": {
+        "plates": 200,
+        "exact": 109,
+        "correct_chars_aligned": 954,
+        "aligned_chars": 976,
+        "segmentation_success": 168,
+        "edit_errors": 348,
+        "chars": 1600,
+        "character_accuracy_on_aligned": 0.9774590163934426,
+        "plate_exact_accuracy": 0.545,
+        "character_error_rate_edit_distance": 0.2175
+      },
+      "real_external_by_layout": {
+        "one_row_car": {
+          "plates": 100,
+          "exact": 69,
+          "correct_chars_aligned": 587,
+          "aligned_chars": 592,
+          "segmentation_success": 92,
+          "edit_errors": 101,
+          "chars": 800,
+          "character_accuracy_on_aligned": 0.9915540540540541,
+          "plate_exact_accuracy": 0.69,
+          "character_error_rate_edit_distance": 0.12625
+        },
+        "two_row_car": {
+          "plates": 100,
+          "exact": 40,
+          "correct_chars_aligned": 367,
+          "aligned_chars": 384,
+          "segmentation_success": 76,
+          "edit_errors": 247,
+          "chars": 800,
+          "character_accuracy_on_aligned": 0.9557291666666666,
+          "plate_exact_accuracy": 0.4,
+          "character_error_rate_edit_distance": 0.30875
+        }
+      },
+      "real_external_failures": {
+        "segmentation_or_row": 32,
+        "character_count": 46
+      },
+      "size_and_macs": {
+        "weights": 37950,
+        "biases": 248,
+        "parameters": 38198,
+        "fp32_bytes": 152792,
+        "int8_weights_int32_bias_bytes": 38942,
+        "macs_per_character": 274200,
+        "macs_per_8_character_plate": 2193600,
+        "layers": {
+          "features.0": {
+            "weight_shape": [
+              6,
+              1,
+              5,
+              5
+            ],
+            "weights": 150,
+            "biases": 6,
+            "macs": 117600
+          },
+          "features.3": {
+            "weight_shape": [
+              8,
+              6,
+              5,
+              5
+            ],
+            "weights": 1200,
+            "biases": 8,
+            "macs": 120000
+          },
+          "classifier.0": {
+            "weight_shape": [
+              120,
+              200
+            ],
+            "weights": 24000,
+            "biases": 120,
+            "macs": 24000
+          },
+          "classifier.2": {
+            "weight_shape": [
+              84,
+              120
+            ],
+            "weights": 10080,
+            "biases": 84,
+            "macs": 10080
+          },
+          "classifier.4": {
+            "weight_shape": [
+              30,
+              84
+            ],
+            "weights": 2520,
+            "biases": 30,
+            "macs": 2520
+          }
+        }
+      },
+      "cpu_forward_latency": {
+        "1": {
+          "repeats": 1000,
+          "median_ms_per_batch": 0.17045,
+          "p95_ms_per_batch": 0.2589,
+          "min_ms_per_batch": 0.1472,
+          "max_ms_per_batch": 0.5155,
+          "threads": 4
+        },
+        "8": {
+          "repeats": 1000,
+          "median_ms_per_batch": 0.2824,
+          "p95_ms_per_batch": 0.583,
+          "min_ms_per_batch": 0.2113,
+          "max_ms_per_batch": 0.8335,
+          "threads": 4
+        }
+      },
+      "int8_reference_prepared_test": {
+        "checkpoint_sha256": "16ebca8f55a71bb9b015325637171b8c8adb290453c615616a0103dd78f5304d",
+        "weight_bytes": 37950,
+        "bias_count": 248,
+        "shifts": [
+          10,
+          11,
+          11,
+          10,
+          10
+        ],
+        "total": {
+          "plates": 400,
+          "fp32_exact": 334,
+          "int8_exact": 334,
+          "characters": 3200,
+          "fp32_correct": 3079,
+          "int8_correct": 3080,
+          "agreement": 3197
+        },
+        "by_layout": {
+          "one_row_car": {
+            "plates": 200,
+            "fp32_exact": 177,
+            "int8_exact": 177,
+            "characters": 1600,
+            "fp32_correct": 1550,
+            "int8_correct": 1551,
+            "agreement": 1599
+          },
+          "two_row_car": {
+            "plates": 200,
+            "fp32_exact": 157,
+            "int8_exact": 157,
+            "characters": 1600,
+            "fp32_correct": 1529,
+            "int8_correct": 1529,
+            "agreement": 1598
+          }
+        }
+      }
+    }
+  },
+  "analytical_comparison": {
+    "mac_reduction_fraction": 0.34433285509325684,
+    "weight_reduction_fraction": 0.3990498812351544,
+    "ideal_compute_speedup_pe8": 1.525164113785558,
+    "int8_model_bits_fraction_of_board_dense": 0.3060802045177045,
+    "int8_model_bits_fraction_of_board_pruned": 0.18573527167277168
+  },
+  "quartus_postfit": {
+    "dense": {
+      "source": "hardware/dataflow_study/rtl_eval/dense_stream/output_files",
+      "device": "10M50DAF484C7G",
+      "top": "Bench_dense_stream",
+      "logic_elements": 2356,
+      "dedicated_logic_registers": 1066,
+      "memory_bits": 560432,
+      "multiplier_9bit_elements": 1,
+      "fmax_mhz_slow_85c": 64.76,
+      "setup_slack_ns_first_85c": 4.558,
+      "setup_and_hold_fully_constrained": false,
+      "physical_board_measured": false
+    },
+    "pruned": {
+      "source": "hardware/dataflow_study/rtl_eval/pruned_stream/output_files",
+      "device": "10M50DAF484C7G",
+      "top": "Bench_pruned_stream",
+      "logic_elements": 2335,
+      "dedicated_logic_registers": 1066,
+      "memory_bits": 358832,
+      "multiplier_9bit_elements": 1,
+      "fmax_mhz_slow_85c": 68.59,
+      "setup_slack_ns_first_85c": 5.421,
+      "setup_and_hold_fully_constrained": false,
+      "physical_board_measured": false
+    }
+  },
+  "functional_schedule_verification": {
+    "source": "4 held-out prepared real glyph crops, two one-row and two two-row",
+    "input_count": 4,
+    "hardware_implementation": false,
+    "models": {
+      "dense": {
+        "output_stationary": {
+          "conv1_max_abs_error": 4.76837158203125e-07,
+          "conv2_max_abs_error": 1.9073486328125e-06,
+          "logit_max_abs_error": 4.76837158203125e-07,
+          "argmax_agreement": 4
+        },
+        "weight_stationary": {
+          "conv1_max_abs_error": 2.384185791015625e-07,
+          "conv2_max_abs_error": 2.5033950805664062e-06,
+          "logit_max_abs_error": 4.76837158203125e-07,
+          "argmax_agreement": 4
+        },
+        "row_stationary": {
+          "conv1_max_abs_error": 5.960464477539062e-07,
+          "conv2_max_abs_error": 2.384185791015625e-06,
+          "logit_max_abs_error": 2.980232238769531e-07,
+          "argmax_agreement": 4
+        }
+      },
+      "pruned": {
+        "output_stationary": {
+          "conv1_max_abs_error": 4.76837158203125e-07,
+          "conv2_max_abs_error": 2.1457672119140625e-06,
+          "logit_max_abs_error": 9.5367431640625e-07,
+          "argmax_agreement": 4
+        },
+        "weight_stationary": {
+          "conv1_max_abs_error": 3.5762786865234375e-07,
+          "conv2_max_abs_error": 2.6226043701171875e-06,
+          "logit_max_abs_error": 9.5367431640625e-07,
+          "argmax_agreement": 4
+        },
+        "row_stationary": {
+          "conv1_max_abs_error": 4.76837158203125e-07,
+          "conv2_max_abs_error": 1.9073486328125e-06,
+          "logit_max_abs_error": 9.5367431640625e-07,
+          "argmax_agreement": 4
+        }
+      }
+    }
+  },
+  "tensor_profile": {
+    "activation_source": "8 held-out prepared real glyph crops (4 plates, 2 per layout)",
+    "activation_sample_count": 8,
+    "not_hardware_measured": true,
+    "models": {
+      "dense": {
+        "layer_weights_fp32": {
+          "features.0": {
+            "count": 150,
+            "min": -0.2788442373275757,
+            "max": 0.3064935803413391,
+            "mean": -0.016533206148596945,
+            "std": 0.12941840552512673,
+            "p01": -0.26828213036060333,
+            "p99": 0.27303706407546957,
+            "exact_zero_fraction": 0.0
+          },
+          "features.3": {
+            "count": 2400,
+            "min": -0.21537554264068604,
+            "max": 0.2075279951095581,
+            "mean": 0.0010522604208775496,
+            "std": 0.07914417037303698,
+            "p01": -0.16180407702922822,
+            "p99": 0.15834696114063251,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.0": {
+            "count": 48000,
+            "min": -0.22822941839694977,
+            "max": 0.22929608821868896,
+            "mean": 2.4855606243685693e-05,
+            "std": 0.05476141664344361,
+            "p01": -0.12527750477194785,
+            "p99": 0.12615055680274975,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.2": {
+            "count": 10080,
+            "min": -0.28508079051971436,
+            "max": 0.30380484461784363,
+            "mean": -0.001295310977189866,
+            "std": 0.09662187244859692,
+            "p01": -0.20548146456480026,
+            "p99": 0.20577192738652195,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.4": {
+            "count": 2520,
+            "min": -0.32305705547332764,
+            "max": 0.3576202988624573,
+            "mean": 0.0025508940385926895,
+            "std": 0.1435507440514513,
+            "p01": -0.26460813462734223,
+            "p99": 0.26678597062826154,
+            "exact_zero_fraction": 0.0
+          }
+        },
+        "layer_biases_fp32": {
+          "features.0": {
+            "count": 6,
+            "min": -0.30203065276145935,
+            "max": 0.3351353704929352,
+            "mean": 0.0007511011014382044,
+            "std": 0.216752379376593,
+            "p01": -0.2981178306043148,
+            "p99": 0.32446905039250856,
+            "exact_zero_fraction": 0.0
+          },
+          "features.3": {
+            "count": 16,
+            "min": -0.09284862875938416,
+            "max": 0.09860922396183014,
+            "mean": 0.004752253356855363,
+            "std": 0.05217757577262829,
+            "p01": -0.0911244198679924,
+            "p99": 0.09434308558702467,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.0": {
+            "count": 120,
+            "min": -0.11544725298881531,
+            "max": 0.11174006760120392,
+            "mean": -0.005211592987567807,
+            "std": 0.05211589374652958,
+            "p01": -0.10058479093015193,
+            "p99": 0.10808583751320841,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.2": {
+            "count": 84,
+            "min": -0.16004295647144318,
+            "max": 0.18001067638397217,
+            "mean": 0.0029271246859848147,
+            "std": 0.07835982198748621,
+            "p01": -0.1436142933368683,
+            "p99": 0.15031893044710165,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.4": {
+            "count": 30,
+            "min": -0.3384242653846741,
+            "max": 0.16082260012626648,
+            "mean": -0.06635900539695286,
+            "std": 0.14025664960885692,
+            "p01": -0.3338418766856194,
+            "p99": 0.15542386770248415,
+            "exact_zero_fraction": 0.0
+          }
+        },
+        "layer_output_activations_fp32": {
+          "features.0": {
+            "count": 37632,
+            "min": -1.9537614583969116,
+            "max": 1.9959194660186768,
+            "mean": 0.08990086258153125,
+            "std": 0.8865976262226075,
+            "p01": -1.5013315773010254,
+            "p99": 1.4875309467315674,
+            "exact_zero_fraction": 0.0
+          },
+          "features.3": {
+            "count": 12800,
+            "min": -5.112077236175537,
+            "max": 5.390018463134766,
+            "mean": 0.0376099028070837,
+            "std": 1.5655665379995214,
+            "p01": -3.5986133527755735,
+            "p99": 3.758303012847904,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.0": {
+            "count": 960,
+            "min": -7.199016571044922,
+            "max": 6.235329627990723,
+            "mean": -0.3285514029751842,
+            "std": 2.2503862016929976,
+            "p01": -5.364478659629822,
+            "p99": 4.890589661598203,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.2": {
+            "count": 672,
+            "min": -5.731532573699951,
+            "max": 5.45210599899292,
+            "mean": 0.06645658389676273,
+            "std": 1.8356334947250685,
+            "p01": -3.743164255619049,
+            "p99": 3.6112980294227537,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.4": {
+            "count": 240,
+            "min": -4.664416790008545,
+            "max": 11.426812171936035,
+            "mean": -0.6891753179486841,
+            "std": 2.6430827648181916,
+            "p01": -4.057785029411316,
+            "p99": 9.945695667266845,
+            "exact_zero_fraction": 0.0
+          }
+        },
+        "exported_weights_int8": {
+          "minimum": -117,
+          "maximum": 117,
+          "exact_zero_fraction": 0.014156769596199525,
+          "saturated_127_count": 0
+        },
+        "weight_exponents_by_layer": {
+          "features.0": 8,
+          "features.3": 9,
+          "classifier.0": 9,
+          "classifier.2": 8,
+          "classifier.4": 8
+        },
+        "tanh_shifts_by_layer": {
+          "features.0": 10,
+          "features.3": 11,
+          "classifier.0": 11,
+          "classifier.2": 10,
+          "classifier.4": 10
+        }
+      },
+      "pruned": {
+        "layer_weights_fp32": {
+          "features.0": {
+            "count": 150,
+            "min": -0.2665088176727295,
+            "max": 0.29267191886901855,
+            "mean": -0.016819854194375997,
+            "std": 0.12948147756402478,
+            "p01": -0.26041870266199113,
+            "p99": 0.2678843379020687,
+            "exact_zero_fraction": 0.0
+          },
+          "features.3": {
+            "count": 1200,
+            "min": -0.22340746223926544,
+            "max": 0.21904538571834564,
+            "mean": 0.0027302929187499104,
+            "std": 0.0831352515200069,
+            "p01": -0.17074488133192062,
+            "p99": 0.16367448955774302,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.0": {
+            "count": 24000,
+            "min": -0.2369895726442337,
+            "max": 0.22284765541553497,
+            "mean": -3.6935526972835456e-05,
+            "std": 0.05937930839427314,
+            "p01": -0.13646115154027938,
+            "p99": 0.13501233413815475,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.2": {
+            "count": 10080,
+            "min": -0.30999135971069336,
+            "max": 0.2844533324241638,
+            "mean": -0.0012423897915688205,
+            "std": 0.09883416527720047,
+            "p01": -0.2069402839243412,
+            "p99": 0.210754359215497,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.4": {
+            "count": 2520,
+            "min": -0.37132206559181213,
+            "max": 0.3706173300743103,
+            "mean": 7.60436992254293e-05,
+            "std": 0.1472637053851697,
+            "p01": -0.267500706911087,
+            "p99": 0.27096506297588346,
+            "exact_zero_fraction": 0.0
+          }
+        },
+        "layer_biases_fp32": {
+          "features.0": {
+            "count": 6,
+            "min": -0.3450460433959961,
+            "max": 0.3723302483558655,
+            "mean": 0.011723787834246954,
+            "std": 0.24400414751275334,
+            "p01": -0.3393052689731121,
+            "p99": 0.3614939592778683,
+            "exact_zero_fraction": 0.0
+          },
+          "features.3": {
+            "count": 8,
+            "min": -0.07621022313833237,
+            "max": 0.06485045701265335,
+            "mean": -0.01142493006773293,
+            "std": 0.04745783208946382,
+            "p01": -0.07584735445678234,
+            "p99": 0.06285675395280121,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.0": {
+            "count": 120,
+            "min": -0.118730828166008,
+            "max": 0.10492640733718872,
+            "mean": -0.005371566709072795,
+            "std": 0.053592906106972975,
+            "p01": -0.11588796235620975,
+            "p99": 0.10163144633173943,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.2": {
+            "count": 84,
+            "min": -0.15654440224170685,
+            "max": 0.19046799838542938,
+            "mean": 0.004990253680651742,
+            "std": 0.07915125572664083,
+            "p01": -0.14336335614323617,
+            "p99": 0.15652689218521126,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.4": {
+            "count": 30,
+            "min": -0.33553361892700195,
+            "max": 0.1550491750240326,
+            "mean": -0.06512176993613442,
+            "std": 0.13896463392850647,
+            "p01": -0.3308781564235687,
+            "p99": 0.1488392023742199,
+            "exact_zero_fraction": 0.0
+          }
+        },
+        "layer_output_activations_fp32": {
+          "features.0": {
+            "count": 37632,
+            "min": -2.0754852294921875,
+            "max": 2.0575225353240967,
+            "mean": 0.1022544478753412,
+            "std": 0.9111292718237721,
+            "p01": -1.4859683620929718,
+            "p99": 1.611273330450058,
+            "exact_zero_fraction": 0.0
+          },
+          "features.3": {
+            "count": 6400,
+            "min": -4.872067451477051,
+            "max": 5.239847183227539,
+            "mean": 0.04383426809790762,
+            "std": 1.5730204270614825,
+            "p01": -3.683955988883972,
+            "p99": 3.738423972129823,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.0": {
+            "count": 960,
+            "min": -4.893472671508789,
+            "max": 4.095506191253662,
+            "mean": -0.11419091436133992,
+            "std": 1.3437943495195157,
+            "p01": -3.3556654930114744,
+            "p99": 3.0111515688896175,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.2": {
+            "count": 672,
+            "min": -5.202765464782715,
+            "max": 4.9550042152404785,
+            "mean": 0.1375308130213636,
+            "std": 1.7515703573124768,
+            "p01": -3.6118350481987,
+            "p99": 3.9722586774826034,
+            "exact_zero_fraction": 0.0
+          },
+          "classifier.4": {
+            "count": 240,
+            "min": -4.930851459503174,
+            "max": 11.20543098449707,
+            "mean": -0.6606648355256766,
+            "std": 2.712277034937966,
+            "p01": -4.263504767417908,
+            "p99": 10.302482099533078,
+            "exact_zero_fraction": 0.0
+          }
+        },
+        "exported_weights_int8": {
+          "minimum": -121,
+          "maximum": 114,
+          "exact_zero_fraction": 0.01235836627140975,
+          "saturated_127_count": 0
+        },
+        "weight_exponents_by_layer": {
+          "features.0": 8,
+          "features.3": 9,
+          "classifier.0": 9,
+          "classifier.2": 8,
+          "classifier.4": 8
+        },
+        "tanh_shifts_by_layer": {
+          "features.0": 10,
+          "features.3": 11,
+          "classifier.0": 11,
+          "classifier.2": 10,
+          "classifier.4": 10
+        }
+      }
+    }
+  },
+  "interpretation": {
+    "real_prepared_test": "OCR only; 32x32 glyph crops prepared using label count",
+    "real_external_test": "photo -> annotated plate bbox -> perspective correction -> unconstrained segmentation -> OCR; not full-frame detection",
+    "streaming": "frame input over JTAG; not line-buffer pixel-stream convolution",
+    "stationary": "WS/OS/RS CPU schedules verified on four glyphs; existing serial RTL keeps one output partial sum; separate RS/WS/PE8 RTL not synthesized",
+    "fpga_timing": "post-fit estimate only; timing report warns not fully constrained; no new JTAG board measurement"
+  }
+}

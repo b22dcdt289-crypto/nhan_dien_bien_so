@@ -62,6 +62,7 @@ def quantize(state: dict) -> tuple[dict, list[int], list[int], list[int]]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", type=Path, default=ROOT / "artifacts/compare_conv2_stream_20260929")
+    parser.add_argument("--pruned-file", default="conv2_pruned.pt", help="Filename of the compact Conv2 checkpoint in --models.")
     parser.add_argument("--out-root", type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument("--seed", type=int, default=20260929)
     parser.add_argument("--plates-per-type", type=int, default=2)
@@ -85,7 +86,7 @@ def main() -> None:
     lut = [int(np.rint(127 * math.tanh(index / 32))) for index in range(-128, 129)]
     summaries = {}
     for architecture, cls in (("dense", LeNet5), ("conv2_pruned", LeNet5Conv2Pruned)):
-        checkpoint_path = args.models / (architecture + ".pt")
+        checkpoint_path = args.models / (args.pruned_file if architecture == "conv2_pruned" else "dense.pt")
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
         if list(checkpoint["classes"]) != CLASS_NAMES:
             raise ValueError("Class order differs between matched checkpoints")

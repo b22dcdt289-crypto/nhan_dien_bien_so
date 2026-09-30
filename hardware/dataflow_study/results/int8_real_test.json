@@ -1,0 +1,89 @@
+{
+  "source": "identity-disjoint real prepared test glyph crops, label-count-assisted preprocessing",
+  "plates": 400,
+  "characters": 3200,
+  "models": {
+    "dense": {
+      "checkpoint_sha256": "b31bf971c9324068f32086f357c0abafbeaf75bc7164c3fb6b25e373d2f11591",
+      "weight_bytes": 63150,
+      "bias_count": 256,
+      "shifts": [
+        10,
+        11,
+        11,
+        10,
+        10
+      ],
+      "total": {
+        "plates": 400,
+        "fp32_exact": 336,
+        "int8_exact": 336,
+        "characters": 3200,
+        "fp32_correct": 3083,
+        "int8_correct": 3083,
+        "agreement": 3198
+      },
+      "by_layout": {
+        "one_row_car": {
+          "plates": 200,
+          "fp32_exact": 179,
+          "int8_exact": 178,
+          "characters": 1600,
+          "fp32_correct": 1553,
+          "int8_correct": 1552,
+          "agreement": 1599
+        },
+        "two_row_car": {
+          "plates": 200,
+          "fp32_exact": 157,
+          "int8_exact": 158,
+          "characters": 1600,
+          "fp32_correct": 1530,
+          "int8_correct": 1531,
+          "agreement": 1599
+        }
+      }
+    },
+    "pruned": {
+      "checkpoint_sha256": "16ebca8f55a71bb9b015325637171b8c8adb290453c615616a0103dd78f5304d",
+      "weight_bytes": 37950,
+      "bias_count": 248,
+      "shifts": [
+        10,
+        11,
+        11,
+        10,
+        10
+      ],
+      "total": {
+        "plates": 400,
+        "fp32_exact": 334,
+        "int8_exact": 334,
+        "characters": 3200,
+        "fp32_correct": 3079,
+        "int8_correct": 3080,
+        "agreement": 3197
+      },
+      "by_layout": {
+        "one_row_car": {
+          "plates": 200,
+          "fp32_exact": 177,
+          "int8_exact": 177,
+          "characters": 1600,
+          "fp32_correct": 1550,
+          "int8_correct": 1551,
+          "agreement": 1599
+        },
+        "two_row_car": {
+          "plates": 200,
+          "fp32_exact": 157,
+          "int8_exact": 157,
+          "characters": 1600,
+          "fp32_correct": 1529,
+          "int8_correct": 1529,
+          "agreement": 1598
+        }
+      }
+    }
+  }
+}
