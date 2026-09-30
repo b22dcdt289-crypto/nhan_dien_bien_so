@@ -62,6 +62,7 @@ def quantize(state: dict) -> tuple[dict, list[int], list[int], list[int]]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", type=Path, default=ROOT / "artifacts/compare_conv2_stream_20260929")
+    parser.add_argument("--out-root", type=Path, default=Path(__file__).resolve().parent)
     parser.add_argument("--seed", type=int, default=20260929)
     parser.add_argument("--plates-per-type", type=int, default=2)
     args = parser.parse_args()
@@ -129,7 +130,7 @@ def main() -> None:
         for variant, (variant_arch, streaming) in VARIANTS.items():
             if variant_arch != architecture:
                 continue
-            out = Path(__file__).resolve().parent / variant / "generated"
+            out = args.out_root / variant / "generated"
             out.mkdir(parents=True, exist_ok=True)
             write_hex(out / "images.hex", [int(value) for value in image_q.flatten()], 8)
             write_hex(out / "weights.hex", weights, 8)

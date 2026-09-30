@@ -209,6 +209,14 @@
         "DE10 Compare - Tổng hợp báo cáo"
       ],
       "problemMatcher": []
+    },
+    {
+      "label": "DE10 Compare - Train 6 biển (dense và pruning)",
+      "type": "process",
+      "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+      "args": ["hardware\\de10_lite_ocr_compare\\train_micro6.py", "--out", "${workspaceFolder}\\${input:de10MicroOut}"],
+      "options": {"cwd": "${workspaceFolder}"},
+      "problemMatcher": []
     }
   ],
   "inputs": [
@@ -217,6 +225,12 @@
       "type": "promptString",
       "description": "Tên thư mục mới trong repo để lưu checkpoint, history và metrics (không ghi đè dữ liệu cũ)",
       "default": "artifacts\\compare_conv2_stream_manual_1"
+    },
+    {
+      "id": "de10MicroOut",
+      "type": "promptString",
+      "description": "Thư mục kết quả mới cho train 6 biển; nhập đường dẫn tương đối, chưa có checkpoint",
+      "default": "artifacts\\compare_micro6_manual_1"
     }
   ]
 }

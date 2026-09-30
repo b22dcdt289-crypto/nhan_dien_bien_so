@@ -49,6 +49,21 @@ từng gói rồi mới bắt đầu OCR.
 ảnh/nhãn biển hoặc bitstream gắn ảnh thử. Báo cáo công khai chỉ tổng hợp theo
 nhóm, không liệt kê biển cụ thể.
 
+## Thí nghiệm 6 biển từ đầu
+
+`BAO_CAO_6_BIEN.md` là phép đối chứng riêng: chọn 2 ảnh ở mỗi nhóm từ
+`train(1)` (6 biển, 49 crop), train **từ đầu** dense và tỉa 50% kênh Conv2.
+Không dùng checkpoint tập lớn làm điểm xuất phát. Trên VS Code, chọn
+**Terminal → Run Task → DE10 Compare - Train 6 biển (dense và pruning)**,
+nhập tên thư mục kết quả mới. Script không ghi đè checkpoint cũ.
+`micro6_train_history.csv` chứa số mỗi epoch và `micro6_public_metrics.json`
+chứa ma trận nhầm lẫn, kết quả từng nhóm và phép đo CPU. Danh sách ảnh cụ thể,
+trọng số và ảnh xuất INT8 nằm trong `artifacts/compare_micro6_verified_20260930/`
+chỉ ở máy này. Bản 6 biển **chưa nạp lên FPGA**; tài nguyên Quartus trích dẫn
+trong báo cáo là phép đo của cùng kiến trúc với trọng số tập lớn. Nếu train một
+lượt mới ở thư mục khác, chỉ dùng báo cáo của lượt này sau khi chạy giả lập
+INT8 và tổng hợp lại; không lấy số accuracy của lượt cũ gán cho checkpoint mới.
+
 ## Giới hạn đo
 
 - Đây là **OCR ký tự đã được cắt sẵn**. FPGA chưa nhận camera, tìm biển,
