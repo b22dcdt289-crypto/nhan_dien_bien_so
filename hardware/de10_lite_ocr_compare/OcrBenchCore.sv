@@ -3,12 +3,12 @@
 // Streaming here means frame input; convolution still uses a serial MAC engine.
 module OcrBenchCore #(
     parameter integer CONV2_CHANNELS = 8,
-    parameter integer STREAM_INPUT = 0
+    parameter integer STREAM_INPUT = 0,
+    parameter integer NUM_SAMPLES = 50
 ) (
     input  wire MAX10_CLK1_50,
     output wire LEDR0
 );
-    localparam integer NUM_SAMPLES = 50;
     localparam integer NUM_WEIGHTS = 12750 + 3150 * CONV2_CHANNELS;
     localparam integer NUM_BIASES = 240 + CONV2_CHANNELS;
     localparam integer SOURCE_WIDTH = STREAM_INPUT ? 144 : 8;

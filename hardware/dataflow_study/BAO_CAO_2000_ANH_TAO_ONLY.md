@@ -40,7 +40,41 @@ Ngày chạy: 01/10/2026. Đây là **lần train mới**, seed `20261003`, tác
 | CPU PyTorch, 1 glyph, p50/1.000 lần xen kẽ | 0,1730 ms | 0,1715 ms | khoảng 1,009× |
 | CPU PyTorch, batch 8 glyph, p50/1.000 lần | 0,24325 ms | 0,23575 ms | khoảng 1,032× |
 
-Benchmark CPU chỉ tính forward trên tensor 32×32, **không** gồm tạo ảnh, tách ký tự, truyền ảnh hay FPGA. Tốc độ CPU không tăng theo tỷ lệ giảm MAC vì overhead framework và Conv1/FC2/FC3 vẫn giữ nguyên. Không tổng hợp/nạp checkpoint của lần train này lên DE10-Lite; số liệu Quartus trong báo cáo trước thuộc **checkpoint khác** và không được gán cho lần train này.
+Benchmark CPU chỉ tính forward trên tensor 32×32, **không** gồm tạo ảnh, tách ký tự, truyền ảnh hay FPGA. Tốc độ CPU không tăng theo tỷ lệ giảm MAC vì overhead framework và Conv1/FC2/FC3 vẫn giữ nguyên.
+
+## Đo trực tiếp trên DE10-Lite với checkpoint của lần train này
+
+Quartus Prime Lite 25.1 compile riêng hai bản frame-stream dense/pruned. Programmer báo `Configuration succeeded` với device JTAG ID `0x031050DD` cho **cả hai bitstream**. Sau mỗi lần nạp, Tcl gửi toàn bộ **1.600 crop 32×32 từ 200 biển synthetic test giữ riêng** (100 biển một hàng, 100 biển hai hàng) qua USB-Blaster/JTAG. Cả hai lượt trả đủ mẫu, sample sequence liên tục qua các lần quay vòng slot 7-bit và không timeout. Đây là số đo vật lý trên kit, không phải mô phỏng.
+
+| Số đo | Dense | Pruned Conv2 50% | Cách đọc |
+|---|---:|---:|---|
+| Ký tự đúng trên board | **1.600/1.600 (100%)** | **1.600/1.600 (100%)** | Cùng 1.600 crop synthetic |
+| Biển đúng trọn vẹn | **200/200 (100%)** | **200/200 (100%)** | 100 biển một hàng + 100 biển hai hàng mỗi bản |
+| FPGA trùng fixed-point reference | **1.600/1.600** | **1.600/1.600** | Đối chiếu từng ký tự |
+| Đúng biển theo bố cục một hàng | **100/100** | **100/100** | Ghép đúng 8 ký tự theo nhãn test |
+| Đúng biển theo bố cục hai hàng | **100/100** | **100/100** | Ghép đúng 8 ký tự theo nhãn test |
+| Chu kỳ lõi/ký tự, đọc probe FPGA | **870.198** | **577.998** | Không đổi qua 1.600 mẫu mỗi nhánh |
+| Compute/ký tự ở clock 50 MHz | **17,40396 ms** | **11,55996 ms** | cycles ÷ 50 MHz; khớp phép đổi đơn vị của probe |
+| Nạp ảnh JTAG, p50 / p95 | **1,001 / 1,006 ms** | **1,001 / 1,006 ms** | Trên 1.600 crop, CSV ghi millisecond nguyên |
+| Cả nạp + OCR, p50 / p95 | **1,075 / 1,081 ms** | **1,060 / 1,066 ms** | Mỗi crop; gồm giao tiếp JTAG/Quartus |
+| Quartus logic elements | **2.332 / 49.760** | **2.301 / 49.760** | Post-fit |
+| Quartus total memory bits | **560.432 bit** | **358.832 bit** | Post-fit, giảm 35,97%; không đồng nhất với số block RAM |
+| Registers / multiplier 9-bit | **1.068 / 1** | **1.068 / 1** | Post-fit; một multiplier MAC nối tiếp |
+| Quartus Fmax chậm 85°C | **64,00 MHz** | **68,65 MHz** | Static timing estimate, không phải frequency đo bằng counter trên kit |
+
+Tập này chỉ có **18/30 lớp ký tự** trong alphabet; ma trận confusion được lưu đủ 30×30 nhưng các lớp không có mẫu test không thể được đánh giá. 100% ở đây chỉ áp dụng cho bộ ảnh dựng frontal này, không chứng minh độ chính xác trên ảnh camera/biển thật. “Độ chính xác toàn biển” được tính bằng cách ghép đúng tám dự đoán ký tự theo thứ tự crop đã có sẵn; phép đo không gồm tìm biển, perspective correction hay phân loại/sắp dòng trên kit.
+
+Từ probe, structured pruning giảm chu kỳ compute **33,58%** và tăng tốc lõi đo bằng cycles **1,506×**. MAC lý thuyết giảm **34,43%** (418.200 xuống 274.200 MAC/crop); tổng memory bits post-fit giảm **35,97%**. Dù vậy, lượt JTAG + OCR chỉ nhanh hơn khoảng **1,014×** theo p50 vì thời gian truyền ảnh (~1 giây/crop) lấn át compute (17,40/11,56 ms). Cả hai thiết kế dùng cùng một MAC nối tiếp; output/psum nằm trong thanh ghi `acc`, nên đây chỉ là baseline gần output-stationary. Không có phiên bản RTL riêng cho weight-stationary, row-stationary, PE song song hay pixel-stream + line-buffer trong phép đo này.
+
+**Khuyến nghị theo phép đo hiện có:** dùng structured pruning như ứng viên giảm compute và tổng bộ nhớ nội chip cho DE10-Lite; giữ điều kiện phải thử lại trên ảnh camera thật trước khi kết luận accuracy. Không dùng JTAG frame streaming làm đường truyền sản phẩm realtime: phép đo trực tiếp cho thấy khoảng một giây mỗi crop. Giữ lõi MAC nối tiếp làm baseline. Chưa chọn WS/RS hoặc mạng multicast tái sử dụng dữ liệu theo số liệu phần cứng vì chưa có bản RTL riêng được nạp và đo; cần dựng hai biến thể đó mới so được công bằng.
+
+Quartus báo compile thành công (dense 0 lỗi/32 cảnh báo; pruned 0 lỗi/33 cảnh báo). Fmax và slack là post-fit; STA vẫn cảnh báo thiết kế chưa fully constrained cho setup/hold. Không coi Fmax là phép đo tốc độ chạy của ứng dụng. Các lượt Signal Tap mất **28:45** dense và **28:16** pruned để gửi/nhận 1.600 crop; thời lượng lượt phụ thuộc giao tiếp PC–JTAG.
+
+Raw file để kiểm chứng trên máy:
+
+- [CSV kết quả board dense](rtl_eval/synthetic_only_fulltest_20261001/dense_stream/generated/board_results.csv) và [CSV pruned](rtl_eval/synthetic_only_fulltest_20261001/pruned_stream/generated/board_results.csv); kèm [manifest mẫu dense](rtl_eval/synthetic_only_fulltest_20261001/dense_stream/generated/manifest.json) và [manifest pruned](rtl_eval/synthetic_only_fulltest_20261001/pruned_stream/generated/manifest.json) để đối chiếu nhãn synthetic.
+- [JSON tổng hợp hardware, gồm confusion matrix 30×30 và metrics theo lớp](results/synthetic_only_2000_v2/hardware_results.json).
+- [Fit report dense](rtl_eval/synthetic_only_fulltest_20261001/dense_stream/output_files/OcrBench.fit.summary), [fit report pruned](rtl_eval/synthetic_only_fulltest_20261001/pruned_stream/output_files/OcrBench.fit.summary); timing tương ứng trong `OcrBench.sta.rpt`.
 
 ## Tệp kết quả và cách chạy lại
 

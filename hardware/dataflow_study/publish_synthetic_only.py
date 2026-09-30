@@ -38,6 +38,9 @@ def main() -> None:
     for name in ("metrics.json", "history.csv", "dense_synthetic_confusion.csv",
                  "pruned_synthetic_confusion.csv", "cpu_interleaved.json"):
         shutil.copy2(args.run / name, args.output / name)
+    hardware_path = args.run / "hardware_results.json"
+    if hardware_path.is_file():
+        shutil.copy2(hardware_path, args.output / "hardware_results.json")
     counts = {key: Counter("".join(row["label"] for row in group)) for key, group in split.items()}
     with (args.output / "class_distribution.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
@@ -65,6 +68,8 @@ def main() -> None:
         "all_dataset_class_count": sum(sum(counts[key][character] for key in counts) > 0
                                        for character in CLASS_NAMES),
     }
+    if hardware_path.is_file():
+        summary["hardware_test"] = json.loads(hardware_path.read_text(encoding="utf-8"))
     (args.output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"output": str(args.output), "tested_classes": summary["tested_class_count"],
                       "classes_present_in_all_2000": summary["all_dataset_class_count"]}))

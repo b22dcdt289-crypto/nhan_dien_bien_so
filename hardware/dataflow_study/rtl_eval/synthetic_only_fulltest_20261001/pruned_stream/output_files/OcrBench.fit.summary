@@ -1,0 +1,18 @@
+Fitter Status : Successful - Thu Oct  1 02:11:18 2026
+Quartus Prime Version : 25.1std.0 Build 1129 10/21/2025 SC Lite Edition
+Revision Name : OcrBench
+Top-level Entity Name : Bench_pruned_stream
+Family : MAX 10
+Device : 10M50DAF484C7G
+Timing Models : Final
+Total logic elements : 2,301 / 49,760 ( 5 % )
+    Total combinational functions : 1,751 / 49,760 ( 4 % )
+    Dedicated logic registers : 1,068 / 49,760 ( 2 % )
+Total registers : 1068
+Total pins : 2 / 360 ( < 1 % )
+Total virtual pins : 0
+Total memory bits : 358,832 / 1,677,312 ( 21 % )
+Embedded Multiplier 9-bit elements : 1 / 288 ( < 1 % )
+Total PLLs : 0 / 4 ( 0 % )
+UFM blocks : 0 / 1 ( 0 % )
+ADC blocks : 0 / 2 ( 0 % )
