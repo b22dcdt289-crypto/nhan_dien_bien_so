@@ -3,7 +3,7 @@ set_global_assignment -name DEVICE 10M50DAF484C7G
 set_global_assignment -name TOP_LEVEL_ENTITY Bench_pruned_stream_25
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../../de10_lite_ocr_compare/OcrBenchCoreK3.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../../../de10_lite_ocr_compare/BenchVariantsK3_25.sv
-set_global_assignment -name SDC_FILE ../../../../de10_lite_ocr_compare/OcrBench.sdc
+set_global_assignment -name SDC_FILE ../OcrBench_50MHz_board.sdc
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name NUM_PARALLEL_PROCESSORS 4
 set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
