@@ -1,0 +1,26 @@
+{
+  "measurement": "Repeated direct USB-Blaster/JTAG runs on DE10-Lite",
+  "reference": "hardware\\dataflow_study\\results\\three_layout_k3_25mhz_20261009\\pruned_board_results.csv",
+  "reference_samples": 100,
+  "pass_count": 2,
+  "total_tested_characters": 200,
+  "hardware_prediction_mismatches": 0,
+  "hardware_cycle_mismatches": 0,
+  "passes": [
+    {
+      "file": "hardware\\dataflow_study\\results\\three_layout_k3_25mhz_20261009\\stability_pass_1.csv",
+      "samples": 100,
+      "prediction_mismatch_indices": [],
+      "cycle_mismatch_indices": [],
+      "median_jtag_total_ms": 1076.0
+    },
+    {
+      "file": "hardware\\dataflow_study\\results\\three_layout_k3_25mhz_20261009\\stability_pass_2.csv",
+      "samples": 100,
+      "prediction_mismatch_indices": [],
+      "cycle_mismatch_indices": [],
+      "median_jtag_total_ms": 1076.0
+    }
+  ],
+  "scope_note": "Checks repeatability on fixed 32x32 glyphs; not long-term thermal, camera, or full-plate input reliability"
+}

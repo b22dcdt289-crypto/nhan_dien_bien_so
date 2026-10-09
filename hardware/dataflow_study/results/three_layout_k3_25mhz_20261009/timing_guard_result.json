@@ -1,0 +1,277 @@
+{
+  "actual_board_clock_mhz": 50.0,
+  "effective_core_step_mhz": 25.0,
+  "engineering_guardband_mhz": 10.0,
+  "minimum_fmax_mhz": 60.0,
+  "minimum_setup_slack_ns": 2.0,
+  "overall": "pass",
+  "models": {
+    "dense": {
+      "status": "pass",
+      "fmax_mhz_slow_85c": 63.45,
+      "restricted_fmax_mhz_slow_85c": 63.45,
+      "setup_slack_ns_slow_85c": 4.24,
+      "hold_slack_ns_slow_85c": 0.341,
+      "all_timing_checks": {
+        "Slow 1200mV 85C Model Setup 'MAX10_CLK1_50'": {
+          "slack_ns": 4.24,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Setup 'altera_reserved_tck'": {
+          "slack_ns": 45.599,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Hold 'altera_reserved_tck'": {
+          "slack_ns": 0.34,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Hold 'MAX10_CLK1_50'": {
+          "slack_ns": 0.341,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Recovery 'altera_reserved_tck'": {
+          "slack_ns": 93.993,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Removal 'altera_reserved_tck'": {
+          "slack_ns": 0.963,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Minimum Pulse Width 'MAX10_CLK1_50'": {
+          "slack_ns": 9.493,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Minimum Pulse Width 'altera_reserved_tck'": {
+          "slack_ns": 49.629,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Setup 'MAX10_CLK1_50'": {
+          "slack_ns": 5.515,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Setup 'altera_reserved_tck'": {
+          "slack_ns": 45.997,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Hold 'altera_reserved_tck'": {
+          "slack_ns": 0.305,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Hold 'MAX10_CLK1_50'": {
+          "slack_ns": 0.306,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Recovery 'altera_reserved_tck'": {
+          "slack_ns": 94.496,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Removal 'altera_reserved_tck'": {
+          "slack_ns": 0.889,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Minimum Pulse Width 'MAX10_CLK1_50'": {
+          "slack_ns": 9.506,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Minimum Pulse Width 'altera_reserved_tck'": {
+          "slack_ns": 49.652,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Setup 'MAX10_CLK1_50'": {
+          "slack_ns": 13.004,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Setup 'altera_reserved_tck'": {
+          "slack_ns": 48.375,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Hold 'altera_reserved_tck'": {
+          "slack_ns": 0.147,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Hold 'MAX10_CLK1_50'": {
+          "slack_ns": 0.148,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Recovery 'altera_reserved_tck'": {
+          "slack_ns": 97.048,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Removal 'altera_reserved_tck'": {
+          "slack_ns": 0.417,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Minimum Pulse Width 'MAX10_CLK1_50'": {
+          "slack_ns": 9.264,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Minimum Pulse Width 'altera_reserved_tck'": {
+          "slack_ns": 49.42,
+          "tns_ns": 0.0
+        }
+      },
+      "unconstrained": {
+        "Illegal Clocks": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Clocks": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Input Ports": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Input Port Paths": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Output Ports": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Output Port Paths": {
+          "setup": 0,
+          "hold": 0
+        }
+      },
+      "sof_sha256": "b89ceb53c7457fa4ea8b2f21719206e5ce8b3f89886c90a0460539fc32bd693b",
+      "failures": []
+    },
+    "pruned": {
+      "status": "pass",
+      "fmax_mhz_slow_85c": 65.33,
+      "restricted_fmax_mhz_slow_85c": 65.33,
+      "setup_slack_ns_slow_85c": 4.694,
+      "hold_slack_ns_slow_85c": 0.242,
+      "all_timing_checks": {
+        "Slow 1200mV 85C Model Setup 'MAX10_CLK1_50'": {
+          "slack_ns": 4.694,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Setup 'altera_reserved_tck'": {
+          "slack_ns": 44.148,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Hold 'MAX10_CLK1_50'": {
+          "slack_ns": 0.242,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Hold 'altera_reserved_tck'": {
+          "slack_ns": 0.34,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Recovery 'altera_reserved_tck'": {
+          "slack_ns": 94.038,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Removal 'altera_reserved_tck'": {
+          "slack_ns": 0.913,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Minimum Pulse Width 'MAX10_CLK1_50'": {
+          "slack_ns": 9.5,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 85C Model Minimum Pulse Width 'altera_reserved_tck'": {
+          "slack_ns": 49.629,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Setup 'MAX10_CLK1_50'": {
+          "slack_ns": 5.823,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Setup 'altera_reserved_tck'": {
+          "slack_ns": 44.538,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Hold 'MAX10_CLK1_50'": {
+          "slack_ns": 0.243,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Hold 'altera_reserved_tck'": {
+          "slack_ns": 0.305,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Recovery 'altera_reserved_tck'": {
+          "slack_ns": 94.564,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Removal 'altera_reserved_tck'": {
+          "slack_ns": 0.833,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Minimum Pulse Width 'MAX10_CLK1_50'": {
+          "slack_ns": 9.512,
+          "tns_ns": 0.0
+        },
+        "Slow 1200mV 0C Model Minimum Pulse Width 'altera_reserved_tck'": {
+          "slack_ns": 49.65,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Setup 'MAX10_CLK1_50'": {
+          "slack_ns": 13.392,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Setup 'altera_reserved_tck'": {
+          "slack_ns": 47.581,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Hold 'MAX10_CLK1_50'": {
+          "slack_ns": 0.095,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Hold 'altera_reserved_tck'": {
+          "slack_ns": 0.147,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Recovery 'altera_reserved_tck'": {
+          "slack_ns": 97.107,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Removal 'altera_reserved_tck'": {
+          "slack_ns": 0.407,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Minimum Pulse Width 'MAX10_CLK1_50'": {
+          "slack_ns": 9.265,
+          "tns_ns": 0.0
+        },
+        "Fast 1200mV 0C Model Minimum Pulse Width 'altera_reserved_tck'": {
+          "slack_ns": 49.426,
+          "tns_ns": 0.0
+        }
+      },
+      "unconstrained": {
+        "Illegal Clocks": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Clocks": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Input Ports": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Input Port Paths": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Output Ports": {
+          "setup": 0,
+          "hold": 0
+        },
+        "Unconstrained Output Port Paths": {
+          "setup": 0,
+          "hold": 0
+        }
+      },
+      "sof_sha256": "da21e249e4ff11d5a868c49d9edeb3db158ba29c0b8d0fcdd9a82c8c8028bc5a",
+      "failures": []
+    }
+  },
+  "scope_note": "Internal 50 MHz and vendor JTAG clocks only; not camera or plate segmentation timing"
+}
