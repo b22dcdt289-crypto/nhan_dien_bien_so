@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 from finetune_mixed_car_compare import PREPARED, prepared_cars
 from train_cost_sensitive_conv2_distill import LeNet5Conv2Pruned
 from train_lenet5 import CLASS_NAMES, LeNet5
+from train_three_layout_compare import LAYOUTS, generated_plates
 
 
 def output_stationary(x: np.ndarray, w: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -92,14 +93,23 @@ def main() -> None:
     parser.add_argument("--models", type=Path, default=Path("artifacts/mixed_car_dense_pruned_20261001"))
     parser.add_argument("--prepared", type=Path, default=PREPARED)
     parser.add_argument("--output", type=Path, default=Path("artifacts/mixed_car_dense_pruned_20261001/dataflow_functional.json"))
+    parser.add_argument("--three-layout", action="store_true", help="Use six held-out generated glyphs across car/motorcycle layouts")
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
     torch.set_num_threads(4)
-    plates = prepared_cars(args.prepared, "test", 1, 20261002, set())
+    if args.three_layout:
+        plates_by_split = generated_plates(Path("data/car_frontal_synthetic_2x1000_v1"),
+                                           Path("data/motorcycle_frontal_synthetic_1000_v2"), 20261009)
+        plates = [next(plate for plate in plates_by_split["test"] if plate["record"]["layout"] == layout)
+                  for layout in LAYOUTS]
+        source = "6 held-out generated glyph crops, 2 per car-one-row/car-two-row/motorcycle-two-row"
+    else:
+        plates = prepared_cars(args.prepared, "test", 1, 20261002, set())
+        source = "4 held-out prepared real glyph crops, two one-row and two two-row"
     samples = [torch.from_numpy(crop.astype(np.float32) / 127.5 - 1.0).unsqueeze(0)
                for plate in plates for crop in plate["crops"][:2]]
-    result = {"source": "4 held-out prepared real glyph crops, two one-row and two two-row",
+    result = {"source": source,
               "input_count": len(samples), "hardware_implementation": False, "models": {}}
     for name, cls in (("dense", LeNet5), ("pruned", LeNet5Conv2Pruned)):
         checkpoint = torch.load(args.models / f"{name}.pt", map_location="cpu", weights_only=False)

@@ -56,11 +56,11 @@ def synthetic_segment(gray: np.ndarray, layout: str) -> list[np.ndarray] | None:
         if h < min_height or area < 35:
             continue
         boxes.append((int(x), int(y), int(w), int(h)))
-    if layout == "two_row_car":
+    if layout in ("two_row_car", "two_row_motorcycle"):
         upper = sorted((box for box in boxes if box[1] + box[3] / 2 < height / 2), key=lambda box: box[0])
         lower = sorted((box for box in boxes if box[1] + box[3] / 2 >= height / 2), key=lambda box: box[0])
         ordered = upper + lower
-        if len(upper) != 3 or len(lower) != 5:
+        if len(upper) != (4 if layout == "two_row_motorcycle" else 3) or len(lower) != 5:
             return None
     else:
         ordered = sorted(boxes, key=lambda box: box[0])
@@ -203,7 +203,7 @@ def plate_metrics(model: nn.Module, plates: list[dict], synthetic: bool, limit: 
             row = plate["record"]
             gray = cv2.imread(str(data_root / row["file"]), cv2.IMREAD_GRAYSCALE)
             crops = synthetic_segment(gray, row["layout"]) if gray is not None else None
-            row_count = 2 if row["layout"] == "two_row_car" else 1
+            row_count = 2 if row["layout"] in ("two_row_car", "two_row_motorcycle") else 1
             layout = row["layout"]
             truth = row["label"]
         else:
@@ -222,7 +222,7 @@ def plate_metrics(model: nn.Module, plates: list[dict], synthetic: bool, limit: 
         stats = by_layout[layout]
         stats["plates"] += 1
         stats["chars"] += len(truth)
-        expected_rows = 2 if layout == "two_row_car" else 1
+        expected_rows = 2 if layout in ("two_row_car", "two_row_motorcycle") else 1
         if crops is None or row_count != expected_rows:
             failure["segmentation_or_row"] += 1
             pred_text = ""

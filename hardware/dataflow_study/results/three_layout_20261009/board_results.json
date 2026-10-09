@@ -1,0 +1,177 @@
+{
+  "measurement": "Direct USB-Blaster/JTAG on DE10-Lite, 50 MHz board clock",
+  "hardware_dataflow": "serial output-accumulating MAC with streamed 32x32 glyph input",
+  "ws_rs_rtl_measured": false,
+  "models": {
+    "dense": {
+      "checkpoint_sha256": "b74607215f8012112834f797344f871158fec8d5b1d833fdb9d5c0714b4f7700",
+      "sof_sha256": "71d89247d96b1ad65a2f3d929127eba1cb0e4bf99aba6c0b9a5e95c7bd8b96a0",
+      "character_count": 100,
+      "character_correct": 99,
+      "fixed_reference_agreement": 100,
+      "plate_count": 12,
+      "plate_exact": 11,
+      "by_domain_layout": {
+        "generated|one_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "real_presegmented|one_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "generated|two_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "real_presegmented|two_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "generated|two_row_motorcycle": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 18,
+          "correct": 18
+        },
+        "real_presegmented|two_row_motorcycle": {
+          "plates": 2,
+          "exact": 1,
+          "characters": 18,
+          "correct": 17
+        }
+      },
+      "cycles_per_character_unique": [
+        870198
+      ],
+      "compute_ms_per_character_at_50mhz": [
+        17.40396
+      ],
+      "jtag_total_ms_median": 860.0,
+      "quartus_postfit": {
+        "logic_elements": {
+          "used": 2318,
+          "available": 49760
+        },
+        "dedicated_registers": {
+          "used": 1068,
+          "available": 49760
+        },
+        "memory_bits": {
+          "used": 560432,
+          "available": 1677312
+        },
+        "9bit_multipliers": {
+          "used": 1,
+          "available": 288
+        },
+        "fmax_mhz_slow_85c": 66.53,
+        "setup_slack_ns_slow_85c": 4.97,
+        "timing_fully_constrained": false,
+        "sof_bytes": 3222573,
+        "sof_sha256": "71d89247d96b1ad65a2f3d929127eba1cb0e4bf99aba6c0b9a5e95c7bd8b96a0",
+        "combinational_functions": {
+          "used": 1770,
+          "available": 49760
+        },
+        "m9k_blocks": {
+          "used": 75,
+          "available": 182
+        }
+      }
+    },
+    "pruned": {
+      "checkpoint_sha256": "dcdc181c3d023e30d21722c82f9bb47c6d0c1e1a46f3fae95d493125ce2b3a90",
+      "sof_sha256": "e0dbc29c1a6d223d30fc6851e4d1bf9d1e746259fb0a62ae4cd4a698829e4f37",
+      "character_count": 100,
+      "character_correct": 99,
+      "fixed_reference_agreement": 100,
+      "plate_count": 12,
+      "plate_exact": 11,
+      "by_domain_layout": {
+        "generated|one_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "real_presegmented|one_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "generated|two_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "real_presegmented|two_row_car": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 16,
+          "correct": 16
+        },
+        "generated|two_row_motorcycle": {
+          "plates": 2,
+          "exact": 2,
+          "characters": 18,
+          "correct": 18
+        },
+        "real_presegmented|two_row_motorcycle": {
+          "plates": 2,
+          "exact": 1,
+          "characters": 18,
+          "correct": 17
+        }
+      },
+      "cycles_per_character_unique": [
+        577998
+      ],
+      "compute_ms_per_character_at_50mhz": [
+        11.55996
+      ],
+      "jtag_total_ms_median": 876.0,
+      "quartus_postfit": {
+        "logic_elements": {
+          "used": 2334,
+          "available": 49760
+        },
+        "dedicated_registers": {
+          "used": 1068,
+          "available": 49760
+        },
+        "memory_bits": {
+          "used": 358832,
+          "available": 1677312
+        },
+        "9bit_multipliers": {
+          "used": 1,
+          "available": 288
+        },
+        "fmax_mhz_slow_85c": 65.69,
+        "setup_slack_ns_slow_85c": 4.776,
+        "timing_fully_constrained": false,
+        "sof_bytes": 3222574,
+        "sof_sha256": "e0dbc29c1a6d223d30fc6851e4d1bf9d1e746259fb0a62ae4cd4a698829e4f37",
+        "combinational_functions": {
+          "used": 1786,
+          "available": 49760
+        },
+        "m9k_blocks": {
+          "used": 51,
+          "available": 182
+        }
+      }
+    }
+  }
+}
