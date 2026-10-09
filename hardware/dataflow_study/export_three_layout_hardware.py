@@ -23,6 +23,7 @@ from hardware.de10_lite_ocr.prepare_demo import fixed_forward, write_hex
 from hardware.de10_lite_ocr_compare.export_compare import quantize
 from train_cost_sensitive_conv2_distill import LeNet5Conv2Pruned
 from train_lenet5 import CLASS_NAMES, LeNet5
+from lenet5_k3 import LeNet5K3, LeNet5K3Pruned
 from train_three_layout_compare import LAYOUTS, generated_plates, real_plates
 from train_synthetic_car_compare import sha
 
@@ -34,6 +35,7 @@ def main() -> None:
                         default=Path("hardware/dataflow_study/rtl_eval/three_layout_20261009"))
     parser.add_argument("--seed", type=int, default=20261009)
     parser.add_argument("--plates-per-layout-domain", type=int, default=2)
+    parser.add_argument("--kernel-size", type=int, choices=(3, 5), default=5)
     args = parser.parse_args()
     if not 1 <= args.plates_per_layout_domain <= 3:
         raise ValueError("1..3 plates/layout/domain are supported by the 7-bit sample ID")
@@ -41,6 +43,8 @@ def main() -> None:
         raise FileExistsError(args.out_root)
     torch.set_num_threads(4)
     run = json.loads((args.models / "metrics.json").read_text(encoding="utf-8"))
+    if run["run"].get("kernel_size", 5) != args.kernel_size:
+        raise RuntimeError("Training kernel size and hardware export disagree")
     synth = generated_plates(Path("data/car_frontal_synthetic_2x1000_v1"),
                              Path("data/motorcycle_frontal_synthetic_1000_v2"), args.seed)
     prepared_root = Path("data/independent_chars_train1_structured_channel30_v1")
@@ -70,12 +74,17 @@ def main() -> None:
     template = Path("hardware/dataflow_study/rtl_eval/synthetic_only_fulltest_20261001")
     args.out_root.mkdir(parents=True)
     shutil.copy2(Path("hardware/de10_lite_ocr_compare/run_variant.tcl"), args.out_root / "run_variant.tcl")
-    shutil.copy2(template / "BenchVariantsFull.sv", args.out_root / "BenchVariantsFull.sv")
+    if args.kernel_size == 5:
+        shutil.copy2(template / "BenchVariantsFull.sv", args.out_root / "BenchVariantsFull.sv")
     summaries = {}
-    for name, cls in (("dense", LeNet5), ("pruned", LeNet5Conv2Pruned)):
+    model_classes = (("dense", LeNet5K3), ("pruned", LeNet5K3Pruned)) if args.kernel_size == 3 else (
+        ("dense", LeNet5), ("pruned", LeNet5Conv2Pruned))
+    for name, cls in model_classes:
         checkpoint_path = args.models / f"{name}.pt"
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-        if checkpoint["classes"] != CLASS_NAMES or sha(checkpoint_path) != run["models"][name]["checkpoint_sha256"]:
+        if (checkpoint["classes"] != CLASS_NAMES or
+                checkpoint.get("kernel_size", 5) != args.kernel_size or
+                sha(checkpoint_path) != run["models"][name]["checkpoint_sha256"]):
             raise RuntimeError("Checkpoint does not match training record")
         model = cls(len(CLASS_NAMES)).eval()
         model.load_state_dict(checkpoint["model"])
@@ -87,7 +96,11 @@ def main() -> None:
         target = args.out_root / variant
         target.mkdir()
         for project_file in ("OcrBench.qsf", "OcrBench.qpf"):
-            shutil.copy2(template / variant / project_file, target / project_file)
+            if args.kernel_size == 3 and project_file == "OcrBench.qsf":
+                source_file = Path("hardware/dataflow_study/rtl_templates/k3") / variant / project_file
+            else:
+                source_file = template / variant / project_file
+            shutil.copy2(source_file, target / project_file)
         generated = target / "generated"
         generated.mkdir()
         write_hex(generated / "images.hex", image_q.flatten().tolist(), 8)
@@ -95,7 +108,8 @@ def main() -> None:
         write_hex(generated / "biases.hex", biases, 32)
         write_hex(generated / "tanh.hex", lut, 8)
         write_hex(generated / "shifts.hex", shifts, 8)
-        manifest = {"architecture": name, "streaming_input": True,
+        manifest = {"architecture": name, "kernel_size": args.kernel_size,
+                    "streaming_input": True,
                     "rtl_dataflow": "one serial MAC, output-accumulating",
                     "checkpoint_sha256": sha(checkpoint_path),
                     "dataset_manifest_sha256": run["run"]["manifest_sha256"],

@@ -28,6 +28,7 @@ from prepare_two_row_frontal_dense import identity_split
 from train_cost_sensitive_conv2_distill import LeNet5Conv2Pruned, compact_teacher_to_student
 from train_independent_structured import parse_source_name
 from train_lenet5 import CLASS_NAMES, CLASS_TO_INDEX, LeNet5
+from lenet5_k3 import LeNet5K3, LeNet5K3Pruned, compact_k3, model_size_k3
 from train_synthetic_car_compare import (
     as_tensors, bench, epoch_batches, evaluate_crops, model_size, plate_metrics,
     sha, synthetic_segment, train_pass,
@@ -139,10 +140,11 @@ def annotated_box_plates(plates: list[dict], source_root: Path) -> list[dict]:
 
 
 def save_checkpoint(path: Path, model: nn.Module, name: str, epoch: int, seed: int,
-                    manifests: dict[str, str], stage: str) -> None:
+                    manifests: dict[str, str], stage: str, kernel_size: int) -> None:
     torch.save({"model": model.state_dict(), "classes": CLASS_NAMES,
                 "channels": [6, 16 if name == "dense" else 8, 120, 84],
-                "epoch": epoch, "seed": seed, "stage": stage, "manifests_sha256": manifests}, path)
+                "kernel_size": kernel_size, "epoch": epoch, "seed": seed,
+                "stage": stage, "manifests_sha256": manifests}, path)
 
 
 def main() -> None:
@@ -161,6 +163,8 @@ def main() -> None:
     parser.add_argument("--real-test-per-layout", type=int, default=100)
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--threads", type=int, default=4)
+    parser.add_argument("--kernel-size", type=int, choices=(3, 5), default=5,
+                        help="3x3 valid-convolution ablation or the existing 5x5 baseline")
     args = parser.parse_args()
     if not 1 <= args.prune_after < args.pretrain_epochs:
         raise ValueError("Invalid prune-after")
@@ -196,7 +200,7 @@ def main() -> None:
     x_syn, y_syn = as_tensors(synth["train"])
     x_mixed, y_mixed = as_tensors(synth["train"] + real_train)
     x_val, y_val = as_tensors(real_val)
-    dense = LeNet5(len(CLASS_NAMES))
+    dense = LeNet5K3(len(CLASS_NAMES)) if args.kernel_size == 3 else LeNet5(len(CLASS_NAMES))
     pruned = None
     opt_dense = torch.optim.AdamW(dense.parameters(), lr=7e-4, weight_decay=1e-5)
     opt_pruned = None
@@ -215,8 +219,10 @@ def main() -> None:
             history.append(record)
             print(json.dumps(record), flush=True)
         if epoch == args.prune_after:
-            pruned = LeNet5Conv2Pruned(len(CLASS_NAMES))
-            selected = compact_teacher_to_student(dense, pruned)
+            pruned = (LeNet5K3Pruned(len(CLASS_NAMES)) if args.kernel_size == 3
+                      else LeNet5Conv2Pruned(len(CLASS_NAMES)))
+            selected = (compact_k3(dense, pruned) if args.kernel_size == 3
+                        else compact_teacher_to_student(dense, pruned))
             pruned.features[0].weight.requires_grad_(True)
             pruned.features[0].bias.requires_grad_(True)
             opt_dense = torch.optim.AdamW(dense.parameters(), lr=7e-4, weight_decay=1e-5)
@@ -244,8 +250,9 @@ def main() -> None:
             if candidate[:2] > best[name][:2]:
                 best[name] = candidate
                 save_checkpoint(args.output / f"{name}.pt", model, name, epoch, args.seed,
-                                manifests, "generated_plus_real")
-    output = {"run": {"seed": args.seed, "pretrain_epochs": args.pretrain_epochs,
+                                manifests, "generated_plus_real", args.kernel_size)
+    output = {"run": {"seed": args.seed, "kernel_size": args.kernel_size,
+                       "pretrain_epochs": args.pretrain_epochs,
                        "prune_after": args.prune_after, "mixed_epochs": args.mixed_epochs,
                        "synthetic_split_plates": {k: len(v) for k, v in synth.items()},
                        "real_train_plates": len(real_train), "real_val_plates": len(real_val),
@@ -268,7 +275,8 @@ def main() -> None:
                                   "best_mixed_epoch": best[name][2],
                                   "generated_test": final_synth, "real_presegmented_test": final_real,
                                   "real_annotated_box_test": end_to_end,
-                                  "size": model_size(model, (6, 16 if name == "dense" else 8, 120, 84)),
+                                  "size": (model_size_k3(model) if args.kernel_size == 3 else
+                                           model_size(model, (6, 16 if name == "dense" else 8, 120, 84))),
                                   "cpu_forward": bench(model, repeats=100),
                                   "checkpoint": str(args.output / f"{name}.pt"),
                                   "checkpoint_sha256": sha(args.output / f"{name}.pt")}

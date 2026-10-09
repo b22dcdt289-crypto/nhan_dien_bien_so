@@ -22,6 +22,7 @@ from finetune_mixed_car_compare import PREPARED, prepared_cars
 from train_cost_sensitive_conv2_distill import LeNet5Conv2Pruned
 from train_lenet5 import CLASS_NAMES, LeNet5
 from train_three_layout_compare import LAYOUTS, generated_plates
+from lenet5_k3 import LeNet5K3, LeNet5K3Pruned
 
 
 def output_stationary(x: np.ndarray, w: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -94,6 +95,7 @@ def main() -> None:
     parser.add_argument("--prepared", type=Path, default=PREPARED)
     parser.add_argument("--output", type=Path, default=Path("artifacts/mixed_car_dense_pruned_20261001/dataflow_functional.json"))
     parser.add_argument("--three-layout", action="store_true", help="Use six held-out generated glyphs across car/motorcycle layouts")
+    parser.add_argument("--kernel-size", type=int, choices=(3, 5), default=5)
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
@@ -111,8 +113,12 @@ def main() -> None:
                for plate in plates for crop in plate["crops"][:2]]
     result = {"source": source,
               "input_count": len(samples), "hardware_implementation": False, "models": {}}
-    for name, cls in (("dense", LeNet5), ("pruned", LeNet5Conv2Pruned)):
+    model_classes = (("dense", LeNet5K3), ("pruned", LeNet5K3Pruned)) if args.kernel_size == 3 else (
+        ("dense", LeNet5), ("pruned", LeNet5Conv2Pruned))
+    for name, cls in model_classes:
         checkpoint = torch.load(args.models / f"{name}.pt", map_location="cpu", weights_only=False)
+        if checkpoint.get("kernel_size", 5) != args.kernel_size:
+            raise RuntimeError("Checkpoint and requested convolution kernel differ")
         model = cls(len(CLASS_NAMES)).eval()
         model.load_state_dict(checkpoint["model"])
         schedules = {key: {"conv1_max_abs_error": 0.0, "conv2_max_abs_error": 0.0,

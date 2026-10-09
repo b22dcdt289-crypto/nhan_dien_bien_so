@@ -1,0 +1,47 @@
+{
+  "source": "6 held-out generated glyph crops, 2 per car-one-row/car-two-row/motorcycle-two-row",
+  "input_count": 6,
+  "hardware_implementation": false,
+  "models": {
+    "dense": {
+      "output_stationary": {
+        "conv1_max_abs_error": 4.76837158203125e-07,
+        "conv2_max_abs_error": 1.430511474609375e-06,
+        "logit_max_abs_error": 9.5367431640625e-07,
+        "argmax_agreement": 6
+      },
+      "weight_stationary": {
+        "conv1_max_abs_error": 7.152557373046875e-07,
+        "conv2_max_abs_error": 9.5367431640625e-07,
+        "logit_max_abs_error": 4.76837158203125e-07,
+        "argmax_agreement": 6
+      },
+      "row_stationary": {
+        "conv1_max_abs_error": 4.76837158203125e-07,
+        "conv2_max_abs_error": 1.9073486328125e-06,
+        "logit_max_abs_error": 9.5367431640625e-07,
+        "argmax_agreement": 6
+      }
+    },
+    "pruned": {
+      "output_stationary": {
+        "conv1_max_abs_error": 4.76837158203125e-07,
+        "conv2_max_abs_error": 1.430511474609375e-06,
+        "logit_max_abs_error": 9.5367431640625e-07,
+        "argmax_agreement": 6
+      },
+      "weight_stationary": {
+        "conv1_max_abs_error": 4.76837158203125e-07,
+        "conv2_max_abs_error": 1.9073486328125e-06,
+        "logit_max_abs_error": 9.5367431640625e-07,
+        "argmax_agreement": 6
+      },
+      "row_stationary": {
+        "conv1_max_abs_error": 4.76837158203125e-07,
+        "conv2_max_abs_error": 1.430511474609375e-06,
+        "logit_max_abs_error": 9.5367431640625e-07,
+        "argmax_agreement": 6
+      }
+    }
+  }
+}
