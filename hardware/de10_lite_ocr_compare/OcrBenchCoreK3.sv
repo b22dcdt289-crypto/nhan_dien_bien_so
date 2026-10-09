@@ -4,7 +4,8 @@
 module OcrBenchCoreK3 #(
     parameter integer CONV2_CHANNELS = 8,
     parameter integer STREAM_INPUT = 0,
-    parameter integer NUM_SAMPLES = 50
+    parameter integer NUM_SAMPLES = 50,
+    parameter integer CORE_ENABLE_DIV2 = 0
 ) (
     input  wire MAX10_CLK1_50,
     output wire LEDR0
@@ -85,6 +86,7 @@ module OcrBenchCoreK3 #(
     reg [6:0] sample_id = 0;
     reg done = 0, busy = 0, start_prev = 0;
     reg [31:0] cycles = 0;
+    reg core_phase = 0;
     reg [31:0] result_cycles = 0;
     reg [7:0] result_seq = 0;
     reg [6:0] result_sample = 0;
@@ -135,13 +137,18 @@ module OcrBenchCoreK3 #(
                            tanh_index > 32'sd128 ? 9'd256 : tanh_index + 32'sd128;
 
     always @(posedge MAX10_CLK1_50) begin
+        core_phase <= ~core_phase;
+        // Count physical 50 MHz input edges, including the edges skipped by
+        // the optional clock enable. The JTAG cycle field is therefore an
+        // actual compute-time measurement for either core configuration.
+        if (busy) cycles <= cycles + 1'd1;
+        if (!CORE_ENABLE_DIV2 || core_phase) begin
         source_meta <= jtag_source;
         source_sync <= source_meta;
         // One registered read port for each activation RAM, independent of FSM branch.
         a_data <= act_a[a_read_addr];
         b_data <= act_b[b_read_addr];
         start_prev <= start_bit;
-        if (busy) cycles <= cycles + 1'd1;
         case (state)
             S_IDLE: begin
                 if (STREAM_INPUT && write_toggle_bit != write_toggle_seen &&
@@ -292,5 +299,6 @@ module OcrBenchCoreK3 #(
             end
             default: state <= S_IDLE;
         endcase
+        end
     end
 endmodule

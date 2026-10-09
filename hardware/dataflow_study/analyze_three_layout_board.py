@@ -24,10 +24,16 @@ def main() -> None:
                         default=Path("hardware/dataflow_study/rtl_eval/three_layout_20261009"))
     parser.add_argument("--output", type=Path,
                         default=Path("artifacts/three_layout_dense_pruned_20261009/board_results.json"))
+    parser.add_argument("--core-enable-divisor", type=int, choices=(1, 2), default=1,
+                        help="Core state advances once per N physical 50 MHz edges")
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
     result = {"measurement": "Direct USB-Blaster/JTAG on DE10-Lite, 50 MHz board clock",
+              "physical_input_clock_mhz": 50,
+              "core_enable_divisor": args.core_enable_divisor,
+              "effective_core_step_mhz": 50 / args.core_enable_divisor,
+              "cycle_counter_unit": "physical 50 MHz rising edges",
               "hardware_dataflow": "serial output-accumulating MAC with streamed 32x32 glyph input",
               "ws_rs_rtl_measured": False, "models": {}}
     for name in ("dense", "pruned"):
