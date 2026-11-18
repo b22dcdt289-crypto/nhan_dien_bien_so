@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+db/
+incremental_db/
+output_files/
+xsim.dir/
+*.log
+*.sof
+*.pof

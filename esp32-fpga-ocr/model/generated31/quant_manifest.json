@@ -1,0 +1,89 @@
+{
+  "input_size": 28,
+  "class_order": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "K",
+    "L",
+    "M",
+    "N",
+    "P",
+    "S",
+    "T",
+    "U",
+    "V",
+    "X",
+    "Y",
+    "Z",
+    "O"
+  ],
+  "layers": {
+    "features.0": {
+      "weight_exponent": 7,
+      "weight_offset": 0,
+      "bias_offset": 0,
+      "weight_shape": [
+        6,
+        1,
+        3,
+        3
+      ]
+    },
+    "features.3": {
+      "weight_exponent": 8,
+      "weight_offset": 54,
+      "bias_offset": 6,
+      "weight_shape": [
+        16,
+        6,
+        3,
+        3
+      ]
+    },
+    "classifier.0": {
+      "weight_exponent": 7,
+      "weight_offset": 918,
+      "bias_offset": 22,
+      "weight_shape": [
+        120,
+        400
+      ]
+    },
+    "classifier.2": {
+      "weight_exponent": 8,
+      "weight_offset": 48918,
+      "bias_offset": 142,
+      "weight_shape": [
+        84,
+        120
+      ]
+    },
+    "classifier.4": {
+      "weight_exponent": 7,
+      "weight_offset": 58998,
+      "bias_offset": 226,
+      "weight_shape": [
+        31,
+        84
+      ]
+    }
+  },
+  "weight_count": 61602,
+  "bias_count": 257
+}
