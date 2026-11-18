@@ -29,3 +29,13 @@ python recognize_independent.py path/to/plate.png --plate-crop --model artifacts
 ```
 
 Lệnh vùng biển dùng checkpoint cùng kiến trúc và thực hiện tách ký tự trước suy luận. Tách ảnh có thể thất bại, nhất là biển hai hàng. Không có bước truyền đến FPGA trong hai lệnh này. Model TorchScript đã được so sánh 240 logit trên 8 tensor thử với model PyTorch tương ứng sau khi xuất và nạp lại; các logit khớp chính xác. Một crop ký tự validation kiểm tra chạy được nhưng dự đoán sai, nên một lần chạy không chứng minh độ chính xác.
+
+## Thử thuật toán quyết định của model mới
+
+```bash
+python esp32-fpga-ocr/model/recognize_pruned_policy.py path/to/plate_roi.png
+```
+
+Chương trình tách ký tự, suy luận model structured50, báo đầu ra gốc, chuỗi ứng viên, top-3 và trạng thái nhận/từ chối; không nhận nhãn chuẩn khi suy luận. Quy tắc thử nghiệm hỗ trợ chuỗi 8 hoặc 9 ký tự theo phạm vi phép thử mới; chuỗi khác bị từ chối. Điều kiện cho phép thay đổi ký tự cần có đủ bằng chứng từ model, không ép theo định dạng.
+
+Ngưỡng và temperature được chuyển từ model 31 lớp mới nhất, **chưa được hiệu chuẩn cho model pruning**. Cần dùng tập calibration tách biệt để hiệu chuẩn và tập test độc lập để đo lại; các điểm không phải xác suất đúng đã được đảm bảo. Model pruning 30 lớp không có lớp `O`, nên không thể áp dụng phép gộp điểm `0/O` hoặc khẳng định phân biệt được cặp này. Thử nghiệm chạy trên PC; chưa đưa thuật toán hay model xuống FPGA.
