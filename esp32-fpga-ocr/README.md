@@ -2,6 +2,8 @@
 
 Đồ án nghiên cứu hệ thống nhận diện biển số: camera OV3660 chụp ảnh, ESP32-S3 tiền xử lý và tách ký tự, FPGA DE10-Lite thực hiện suy luận mạng LeNet với trọng số INT8. Kết quả được đưa trở lại ESP32 để hiển thị và giám sát.
 
+**Bắt đầu:** [Hướng dẫn cài đặt và chạy demo](BAT_DAU.md). Model 31 lớp đã xuất thành `model/lenet_k3_31class.ts`; ảnh demo tổng hợp nằm trong `pc/examples/`.
+
 ## Luồng xử lý trên kit
 
 ```mermaid
