@@ -4,6 +4,8 @@
 
 **Bắt đầu:** [Hướng dẫn cài đặt và chạy demo](BAT_DAU.md). Model 31 lớp đã xuất thành `model/lenet_k3_31class.ts`; ảnh demo tổng hợp nằm trong `pc/examples/`.
 
+Hai mục đích sử dụng: [kiểm tra tốc độ trên PC](TEST_TOC_DO.md) và [hệ thống kit độc lập](KIT_DOC_LAP.md). Chúng hiện dùng hai phiên bản model khác nhau như ghi trong từng hướng dẫn.
+
 ## Luồng xử lý trên kit
 
 ```mermaid
