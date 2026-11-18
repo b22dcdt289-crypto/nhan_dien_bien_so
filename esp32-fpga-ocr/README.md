@@ -29,6 +29,8 @@ Phiên bản `fpga/experimental/` là thiết kế song song đang nghiên cứu
 
 Thử nghiệm 31 lớp dùng ảnh tổng hợp: 2.700 biển train, 460 validation, 380 calibration và 800 test tách theo danh tính. Trên 800 ảnh test tổng hợp, 740 biển được nhận và đúng (92,50% toàn bộ); trong 402 ảnh có phông giữ riêng, 357 biển được nhận và đúng (88,81%). Các chỉ số này chưa chứng minh độ chính xác trên biển thật hoặc toàn tuyến camera–FPGA. Phân tích nhầm lẫn và định nghĩa phép đo ở [báo cáo huấn luyện](docs/TRAINING_REPORT.md); số liệu tổng hợp và lịch sử train ở [`model/training-results/`](model/training-results/).
 
+Các checkpoint đã cắt tỉa kênh và neuron từ những thí nghiệm LeNet trước có tại [danh mục model pruning](model/PRUNING.md). Chúng dùng kiến trúc khác với model 31 lớp K3 và chưa sẵn sàng nạp trực tiếp vào bitstream hiện tại.
+
 ## Cấu trúc thư mục
 
 | Đường dẫn | Nội dung |
