@@ -11,3 +11,21 @@ Các checkpoint dưới đây đã được lưu tại `artifacts/` ở thư m�
 Tên mục tiêu 25% không có nghĩa tổng MAC giảm 25%. Hai thí nghiệm 30 lớp có báo cáo và dữ liệu đối chiếu riêng: [structured50](../../artifacts/channel30_matched_structured_comparison.md) và [Conv2 + distillation](../../artifacts/channel30_cost_hard_conv2_distill_report.md). Kết quả validation trên crop đã chuẩn bị không phải độ chính xác toàn tuyến camera hoặc số đo FPGA.
 
 Mã liên quan: [structured pruning](../../structured_prune_lenet5.py), [huấn luyện structured](../../train_independent_structured.py), [Conv2 distillation](../../train_cost_sensitive_conv2_distill.py), [LeNet gốc](../../train_lenet5.py). Dữ liệu huấn luyện đầy đủ không nằm trong repository.
+
+## Chạy model structured50 trên máy tính
+
+[`lenet5_structured50_30class.ts`](lenet5_structured50_30class.ts) là model TorchScript đã gộp kiến trúc với trọng số đã train, không cần tạo lại class model để chạy. Đầu vào tensor có kích thước `N × 1 × 32 × 32`, kiểu float, giá trị từ −1 đến 1; đầu ra gồm 30 logit theo thứ tự `0123456789ABCDEFGHKLMNPSTUVXYZ`. Ảnh đầu vào cần là từng ký tự đã tách và được chuẩn hóa tương tự dữ liệu train. Điểm softmax là điểm mô hình, không mặc định là tỷ lệ chính xác.
+
+Với Python có `torch`, `numpy`, `Pillow`:
+
+```bash
+python esp32-fpga-ocr/model/infer_pruned_character.py path/to/glyph_32x32.png
+```
+
+Để thử xử lý một ảnh vùng biển đã cắt bằng pipeline máy tính hiện có tại gốc repository, cài thêm `opencv-python` rồi chạy từ thư mục gốc:
+
+```bash
+python recognize_independent.py path/to/plate.png --plate-crop --model artifacts/lenet5_structured50_channel30_matched_v1.pt
+```
+
+Lệnh vùng biển dùng checkpoint cùng kiến trúc và thực hiện tách ký tự trước suy luận. Tách ảnh có thể thất bại, nhất là biển hai hàng. Không có bước truyền đến FPGA trong hai lệnh này. Model TorchScript đã được so sánh 240 logit trên 8 tensor thử với model PyTorch tương ứng sau khi xuất và nạp lại; các logit khớp chính xác. Một crop ký tự validation kiểm tra chạy được nhưng dự đoán sai, nên một lần chạy không chứng minh độ chính xác.
