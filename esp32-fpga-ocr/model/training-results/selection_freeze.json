@@ -1,0 +1,6 @@
+{
+  "checkpoint_sha256": "f5418afe1e743cde6d8a817e03cc7f956feecc9632ac1b54d7b3cd772137aaba",
+  "source_sha256": "fe4aa7d7f5c5caf092a5a29c164df547d5f54762460568bd751c247215d62269",
+  "validation_dataset_sha256": "173427ff23b4c32b6f26f67f0c690c2f9553aca73d5fbe6ce1cf7fcf23eefd43",
+  "selection": "clean and synthetic slashed-zero validation; independent test not opened"
+}

@@ -1,0 +1,15 @@
+{
+  "seed": 2026111780,
+  "epochs": 12,
+  "classes": "0123456789ABCDEFGHKLMNPSTUVXYZO",
+  "initial_model_sha256": "5a1fe27af945dc4b15f9784594bd453195942665f5b071c0f9c94c3e7f35232d",
+  "new_train_glyphs": 22748,
+  "v2_synthetic_replay": 10000,
+  "v4_synthetic_replay": 19200,
+  "augmentation": "random short diagonal marks on some synthetic zeros, local stroke dropout, horizontal scaling, noise",
+  "camera_training_images": 0,
+  "source": "synthetic only",
+  "selection": "minimum of clean and slashed-zero validation macro raw plate accuracy, then validation NLL",
+  "heldout_test_used_in_training": false,
+  "dataset_v4_sha256": "173427ff23b4c32b6f26f67f0c690c2f9553aca73d5fbe6ce1cf7fcf23eefd43"
+}

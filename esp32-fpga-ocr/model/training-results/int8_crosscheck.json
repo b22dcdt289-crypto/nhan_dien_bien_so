@@ -1,0 +1,10 @@
+{
+  "images": 28,
+  "logits_compared": 868,
+  "mismatches": 0,
+  "classes": 31,
+  "weights": 61602,
+  "biases": 257,
+  "stage": "two independent software integer references",
+  "rtl_verified": false
+}

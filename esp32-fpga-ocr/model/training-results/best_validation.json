@@ -1,0 +1,54 @@
+{
+  "epoch": 12,
+  "train_loss": 0.1945303758393904,
+  "val_nll_mean": 0.05681978538632393,
+  "seconds": 10.877,
+  "clean": {
+    "per_layout": {
+      "car_one_row": {
+        "plates": 120,
+        "correct_raw": 107,
+        "segmentation_failures": 0,
+        "raw_exact_rate": 0.8916666666666667
+      },
+      "car_two_row": {
+        "plates": 140,
+        "correct_raw": 125,
+        "segmentation_failures": 0,
+        "raw_exact_rate": 0.8928571428571429
+      },
+      "motorcycle_two_row": {
+        "plates": 200,
+        "correct_raw": 184,
+        "segmentation_failures": 0,
+        "raw_exact_rate": 0.92
+      }
+    },
+    "macro_raw_plate_accuracy": 0.9015079365079366,
+    "glyph_raw_accuracy_conditional": 0.9881443298969073
+  },
+  "slashed_zero": {
+    "per_layout": {
+      "car_one_row": {
+        "plates": 120,
+        "correct_raw": 106,
+        "segmentation_failures": 0,
+        "raw_exact_rate": 0.8833333333333333
+      },
+      "car_two_row": {
+        "plates": 140,
+        "correct_raw": 130,
+        "segmentation_failures": 0,
+        "raw_exact_rate": 0.9285714285714286
+      },
+      "motorcycle_two_row": {
+        "plates": 200,
+        "correct_raw": 193,
+        "segmentation_failures": 0,
+        "raw_exact_rate": 0.965
+      }
+    },
+    "macro_raw_plate_accuracy": 0.9256349206349207,
+    "glyph_raw_accuracy_conditional": 0.9917525773195877
+  }
+}

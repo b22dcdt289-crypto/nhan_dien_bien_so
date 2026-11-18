@@ -1,0 +1,650 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 0.22052490121912366,
+    "val_nll_mean": 0.10291857272386551,
+    "seconds": 10.035,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 100,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8333333333333334
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 118,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8428571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 181,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.905
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8603968253968254,
+      "glyph_raw_accuracy_conditional": 0.9765463917525773
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 98,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8166666666666667
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 122,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8714285714285714
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 184,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.92
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8693650793650795,
+      "glyph_raw_accuracy_conditional": 0.9804123711340206
+    }
+  },
+  {
+    "epoch": 2,
+    "train_loss": 0.20818416711395915,
+    "val_nll_mean": 0.08422300964593887,
+    "seconds": 10.201,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 100,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8333333333333334
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 117,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8357142857142857
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 182,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.91
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8596825396825397,
+      "glyph_raw_accuracy_conditional": 0.979381443298969
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 99,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.825
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 125,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8928571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 186,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.93
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8826190476190477,
+      "glyph_raw_accuracy_conditional": 0.9845360824742269
+    }
+  },
+  {
+    "epoch": 3,
+    "train_loss": 0.20424029120004067,
+    "val_nll_mean": 0.07368965074419975,
+    "seconds": 10.09,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 103,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8583333333333333
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 115,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8214285714285714
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 180,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8599206349206349,
+      "glyph_raw_accuracy_conditional": 0.9819587628865979
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 103,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8583333333333333
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 128,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9142857142857143
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 191,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.955
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9092063492063492,
+      "glyph_raw_accuracy_conditional": 0.9889175257731959
+    }
+  },
+  {
+    "epoch": 4,
+    "train_loss": 0.20214138417240468,
+    "val_nll_mean": 0.06905259937047958,
+    "seconds": 10.096,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 104,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8666666666666667
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 125,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8928571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 182,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.91
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8898412698412699,
+      "glyph_raw_accuracy_conditional": 0.9853092783505155
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 102,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.85
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 128,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9142857142857143
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 190,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.95
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9047619047619048,
+      "glyph_raw_accuracy_conditional": 0.9884020618556701
+    }
+  },
+  {
+    "epoch": 5,
+    "train_loss": 0.1993878648193345,
+    "val_nll_mean": 0.06621992401778698,
+    "seconds": 10.843,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 116,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 180,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8678571428571429,
+      "glyph_raw_accuracy_conditional": 0.9822164948453608
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 104,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8666666666666667
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 129,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9214285714285714
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 193,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.965
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9176984126984126,
+      "glyph_raw_accuracy_conditional": 0.9904639175257732
+    }
+  },
+  {
+    "epoch": 6,
+    "train_loss": 0.19870405008810868,
+    "val_nll_mean": 0.0641177799552679,
+    "seconds": 11.227,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 121,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8642857142857143
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 184,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.92
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8864285714285715,
+      "glyph_raw_accuracy_conditional": 0.9853092783505155
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 102,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.85
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 129,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9214285714285714
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 192,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.96
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9104761904761904,
+      "glyph_raw_accuracy_conditional": 0.9896907216494846
+    }
+  },
+  {
+    "epoch": 7,
+    "train_loss": 0.19761997800143402,
+    "val_nll_mean": 0.06243911013007164,
+    "seconds": 10.616,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 123,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8785714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 183,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.915
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8895238095238095,
+      "glyph_raw_accuracy_conditional": 0.9863402061855671
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 102,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.85
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 130,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 191,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.955
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9111904761904762,
+      "glyph_raw_accuracy_conditional": 0.9896907216494846
+    }
+  },
+  {
+    "epoch": 8,
+    "train_loss": 0.1972872048692137,
+    "val_nll_mean": 0.060234587639570236,
+    "seconds": 9.87,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 125,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8928571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 184,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.92
+        }
+      },
+      "macro_raw_plate_accuracy": 0.895952380952381,
+      "glyph_raw_accuracy_conditional": 0.9876288659793815
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 104,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8666666666666667
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 130,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 191,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.955
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9167460317460318,
+      "glyph_raw_accuracy_conditional": 0.9907216494845361
+    }
+  },
+  {
+    "epoch": 9,
+    "train_loss": 0.19636422328010134,
+    "val_nll_mean": 0.0588790588080883,
+    "seconds": 10.073,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 125,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8928571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 185,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.925
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8976190476190476,
+      "glyph_raw_accuracy_conditional": 0.9878865979381444
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 104,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8666666666666667
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 130,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 192,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.96
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9184126984126983,
+      "glyph_raw_accuracy_conditional": 0.990979381443299
+    }
+  },
+  {
+    "epoch": 10,
+    "train_loss": 0.19670296244738036,
+    "val_nll_mean": 0.05815629102289677,
+    "seconds": 10.725,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 106,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8833333333333333
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 123,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8785714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 185,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.925
+        }
+      },
+      "macro_raw_plate_accuracy": 0.8956349206349206,
+      "glyph_raw_accuracy_conditional": 0.9876288659793815
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 130,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 191,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.955
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9195238095238095,
+      "glyph_raw_accuracy_conditional": 0.990979381443299
+    }
+  },
+  {
+    "epoch": 11,
+    "train_loss": 0.19505857617693337,
+    "val_nll_mean": 0.0576007217168808,
+    "seconds": 10.656,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 106,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8833333333333333
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 125,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8928571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 185,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.925
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9003968253968253,
+      "glyph_raw_accuracy_conditional": 0.9881443298969073
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 105,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.875
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 130,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 192,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.96
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9211904761904762,
+      "glyph_raw_accuracy_conditional": 0.9912371134020619
+    }
+  },
+  {
+    "epoch": 12,
+    "train_loss": 0.1945303758393904,
+    "val_nll_mean": 0.05681978538632393,
+    "seconds": 10.877,
+    "clean": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 107,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8916666666666667
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 125,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8928571428571429
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 184,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.92
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9015079365079366,
+      "glyph_raw_accuracy_conditional": 0.9881443298969073
+    },
+    "slashed_zero": {
+      "per_layout": {
+        "car_one_row": {
+          "plates": 120,
+          "correct_raw": 106,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.8833333333333333
+        },
+        "car_two_row": {
+          "plates": 140,
+          "correct_raw": 130,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.9285714285714286
+        },
+        "motorcycle_two_row": {
+          "plates": 200,
+          "correct_raw": 193,
+          "segmentation_failures": 0,
+          "raw_exact_rate": 0.965
+        }
+      },
+      "macro_raw_plate_accuracy": 0.9256349206349207,
+      "glyph_raw_accuracy_conditional": 0.9917525773195877
+    }
+  }
+]

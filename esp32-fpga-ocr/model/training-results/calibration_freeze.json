@@ -1,0 +1,45 @@
+{
+  "sha256": {
+    "checkpoint": "f5418afe1e743cde6d8a817e03cc7f956feecc9632ac1b54d7b3cd772137aaba",
+    "training_data": "173427ff23b4c32b6f26f67f0c690c2f9553aca73d5fbe6ce1cf7fcf23eefd43",
+    "segmenter": "6b74ae69975de0834585e6201d4f75384612f54030764ea5990201910a417f0e",
+    "segment_base": "f4b2d3267ba2ab4b1de252405c5d966867e2dec32770ff17e51bc2ad73be061b",
+    "evaluation": "ed206de753b87eb69a3fcabfb12a5c31cd7864caf9f319f35728f30e6341e37b",
+    "policy": "6bc1506465c60f78c8623ae00c5ac29be725699b77aa1aab5be0687cc476b3b7",
+    "shared_eval": "02d21c7315d36963b1d905a4b92593f67817f61f83e9321927e0030e12bab0a7",
+    "holdout_builder": "77fba30eaade1826cda36629258071374738e9a301383447c123fec152d5fb84",
+    "render_source": "8c06ce5957e0f7eafa7502075a48b4232763a8edcb5ae393a0e720e64476b819"
+  },
+  "fp32_policy": {
+    "temperature": 0.6098777047334674,
+    "calibration_nll": 0.022134737072569664,
+    "samples": 6384,
+    "minimum_score": 0.4,
+    "minimum_allowed_margin": 0.05,
+    "minimum_alternative_ratio": 1.0,
+    "calibration_plates": 760,
+    "calibration_correct_accepted": 737,
+    "calibration_accepted": 743,
+    "calibration_wrong_accepted": 6,
+    "selection": "maximize correct accepted subject to <=1% wrong among accepted on calibration",
+    "scope": "synthetic calibration; probability and precision are not guaranteed on new domains"
+  },
+  "int8_policy": {
+    "temperature": 0.5888625966746638,
+    "calibration_nll": 0.022235128177435698,
+    "samples": 6384,
+    "minimum_score": 0.4,
+    "minimum_allowed_margin": 0.1,
+    "minimum_alternative_ratio": 1.0,
+    "calibration_plates": 760,
+    "calibration_correct_accepted": 736,
+    "calibration_accepted": 742,
+    "calibration_wrong_accepted": 6,
+    "selection": "maximize correct accepted subject to <=1% wrong among accepted on calibration",
+    "scope": "synthetic calibration; probability and precision are not guaranteed on new domains"
+  },
+  "calibration": "v4 calibration, original and synthetic slashed-zero duplicate",
+  "test_status": "synthetic identities frozen before training; test not evaluated before freeze",
+  "rtl_ready": false,
+  "scope": "one-row car, two-row car, 9-glyph motorcycle LL and LD; O is synthetic OCR stress class"
+}
