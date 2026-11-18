@@ -1,9 +1,11 @@
 # Bản kiểm tra tốc độ trên máy tính
 
-Cài phụ thuộc theo [BAT_DAU.md](BAT_DAU.md), sau đó tại thư mục gốc chạy:
+Cài Python 3.10–3.12 và tại thư mục gốc của gói chạy:
 
 ```powershell
-python esp32-fpga-ocr/pc/benchmark.py esp32-fpga-ocr/pc/examples/synthetic_demo.png --warmup 5 --runs 30 --threads 1 --output ket_qua_toc_do.json
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r esp32-fpga-ocr/requirements-pc.txt
+.\.venv\Scripts\python.exe esp32-fpga-ocr/pc/benchmark.py esp32-fpga-ocr/pc/examples/synthetic_demo.png --warmup 5 --runs 30 --threads 1 --output ket_qua_toc_do.json
 ```
 
 Thay đường dẫn ảnh mẫu bằng ảnh vùng biển đã cắt của bạn. Chương trình dùng **model chính 31 lớp FP32** và lặp một ảnh ROI có sẵn trong RAM; khởi động, đọc ảnh, camera, truyền UART, FPGA và giao diện không nằm trong thời gian. Kết quả gồm median, p95 và trung bình cho tách ảnh, forward mỗi ký tự, toàn bộ ký tự, quyết định và từ ROI đến kết quả. Suy luận từng ký tự được chạy tuần tự trên CPU; tốc độ suy ra từ median là chỉ số PC, không phải FPS đo trên FPGA hay camera. Một ảnh lặp lại không đánh giá độ chính xác.
